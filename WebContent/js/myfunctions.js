@@ -29,6 +29,7 @@ var folderGlobal = [];
 var langGlobal = [];
 var labelsGlobal = {};
 var $selectedDimension;
+var selectedField;
 var currentProject;
 // var currentLanguage;
 
@@ -188,7 +189,7 @@ var customFieldType = {
 
 fieldCols.push({field:"label", title: "label", editable: {type: "text", mode: "inline"}, sortable: true});
 fieldCols.push({field:"description", title: "Description", sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
-fieldCols.push({field:"expression", title: "Expression", sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
+fieldCols.push({field:"expression", title: "Expression", sortable: false, formatter: "expressionFormatter", align: "center"});
 fieldCols.push({field:"traduction", title: "traduction", formatter: "boolFormatter", align: "center", sortable: false});
 fieldCols.push({field:"hidden", title: "Hidden", formatter: "hiddenFormatter", align: "center", sortable: false});
 // fieldCols.push({field:"field_type", title: "field_type", editable: false, sortable: true});
@@ -1247,6 +1248,19 @@ function BuildDrillPath(){
 
 }
 
+function BuildExpression(){
+
+  if($activeSubDatasTable != undefined && selectedField){
+    console.log($("#taExpression").val());
+    selectedField.expression = $("#taExpression").val()
+    updateRow($activeSubDatasTable, selectedField.index, selectedField);
+
+  }
+
+  $('#ExpressionModal').modal('toggle');  
+}
+
+
 function aboveFormatter(value, row, index){
 
   if(row.seqs.length < 2){
@@ -1276,6 +1290,15 @@ function aboveFormatter(value, row, index){
 function dimensionsFormatter (value, row, index) {
   if(row.dimensions.length > 0){
     return row.dimensions[0].dimension + "...";
+  }
+  else{
+    return '';
+  }
+}
+
+function expressionFormatter (value, row, index) {
+  if(row.expression.length > 0){
+    return "...";
   }
   else{
     return '';
@@ -2154,6 +2177,15 @@ function buildFieldTable($el, cols, data, qs){
                 }
                 return;
 
+              case "expression":
+                console.log(row);
+                var fieldName = qs.table_alias + "." + row.field_name;
+                $("#ExpressionFieldName").text(fieldName);
+                $("#taExpression").val(row.expression);
+                $("#ExpressionModal").modal('toggle');
+                selectedField = row;
+
+                break;
 
               default:
 
