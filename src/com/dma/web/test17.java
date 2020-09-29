@@ -18,7 +18,8 @@ public class test17 {
 		// TODO Auto-generated method stub
 
 		Path path = Paths.get("/home/fr054721/dmaconf/qss.json");
-		String selectedQs = "AUTORIZATION_LINEFinal";
+//		String selectedQs = "AUTORIZATION_LINEFinal";
+		String selectedQs = "TYPRISERef";
 //		String selectedQs = "PTA_PRNRef";
 		
 		
@@ -44,20 +45,18 @@ public class test17 {
 				String qsAlias = qs.getValue().getTable_alias();  // table de gauche, celle ou tu es actuellement
 				String gDirName = ""; // prefix qu'on cherche, il vaut cher
 				String qsFinalName = qs.getValue().getTable_alias();   //CONSTANTE, nom du QS final auquel l'arbre ref est accroché, le tronc, on peut le connaitre à tout moment de f1
-				String table = qs.getValue().getTable_name();
+//				String table = qs.getValue().getTable_name();
 				String qSleftType = "Final";
 				
 
 				if(qs.getValue()._id.equalsIgnoreCase(selectedQs)) {
 					System.out.println("[FINAL].[" + qsFinalName + "]");
-					for(Field field: qss.get(qsFinalName + qSleftType).getFields()){
+					for(Field field: qs.getValue().getFields()){
 						System.out.println("[DATA].[" + qsFinalName + "]." + "[" + field.getField_name() + "]");
 					}
 				}
 				
-				
 				Map<String, Integer> recurseCount = new HashMap<String, Integer>();
-				
 				
 				for(Entry<String, QuerySubject> rcqs: qss.entrySet()){
 		        	recurseCount.put(rcqs.getValue().getTable_alias(), 0);
@@ -100,7 +99,6 @@ public class test17 {
 			if(rel.isRef()) { 
 		
 				String pkAlias = rel.getPktable_alias();
-//				System.out.println(pkAlias);
 				
 				if(rel.getKey_type().equalsIgnoreCase("P") || rel.isNommageRep()){
 					gDirNameCurrent = gDirName + "." + pkAlias;
@@ -108,13 +106,10 @@ public class test17 {
 				else{
 					gDirNameCurrent = gDirName + "." + rel.getAbove();
 				}					
-				
-				if(query_subject._id.equalsIgnoreCase((selectedQs)) && query_subject.getType().equalsIgnoreCase("Ref")) {
-//					System.out.println(query_subject.getTable_alias());
-//					System.out.println(selectedQs);
+				if((pkAlias + "Ref").equalsIgnoreCase((selectedQs))) {
 					System.out.println("[REF].[" + qsFinalName + gDirName + "]");
 					for(Field field: qss.get(pkAlias + "Ref").getFields()){
-						System.out.println("[DATA].[" + qsFinalName + "].[" + gDirName.substring(1) + "." + field.getField_name() +"]");
+						System.out.println("[DATA].[" + qsFinalName + "].[" + gDirName + "." + field.getField_name() +"]");
 						
 					}
 				}

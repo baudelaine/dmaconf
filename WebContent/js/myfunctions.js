@@ -1248,11 +1248,126 @@ function BuildDrillPath(){
 
 }
 
+$("#ExpressionModal").on('shown.bs.modal', function(){
+
+});
+
+function AddExpression(){
+
+  var selectedField = $('#selectExpressionField').find("option:selected").val();
+
+  var expression = $("#taExpression").val();
+
+  if(expression.length > 0){
+    $("#taExpression").val(expression + " " + selectedField);
+  }
+  else{
+    $("#taExpression").val(selectedField);
+  }
+
+}
+
+$('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+
+  $('#selectExpressionField').empty();
+  $('#selectExpressionField').selectpicker('refresh');
+
+  var qss = {};
+  var selectedQs = $(this).find("option:selected").val();
+  console.log(selectedQs);
+
+  $.each($datasTable.bootstrapTable("getData"), function(i, obj){
+    qss[obj._id] = obj;
+  });
+
+  var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
+  console.log(parms);
+
+  $.ajax({
+    type: 'POST',
+    url: "GetFieldsFullPath",
+    dataType: 'json',
+    data: JSON.stringify(parms),
+    success: function(data) {
+    console.log(data);
+    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+    if(data.DATAS != null && data.DATAS){
+      if(Object.keys(data.DATAS).length > 0){
+        // var exp = "\\[\\."
+        // var regex = new RegExp(exp, "gi");
+        $.each(data.DATAS, function(key, value){
+          key = key.replace("[.", "[");
+          var option = '<option class="fontsize" value="' + key + '" data-subtext="' + value + '">' + key + '</option>';
+          $('#selectExpressionField').append(option);
+        })
+      }
+    }
+
+    $('#selectExpressionField').append(emptyOption);
+    $('#selectExpressionField').selectpicker('val', "");
+    $('#selectExpressionField').selectpicker('refresh');
+
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+
+
+});
+
+function loadSelectExpressionQS(){
+
+  $('#selectExpressionQS').empty();
+  $('#selectExpressionQS').selectpicker('refresh');
+
+  $('#selectExpressionField').empty();
+  $('#selectExpressionField').selectpicker('refresh');
+
+  var qss = {};
+  $.each($datasTable.bootstrapTable("getData"), function(i, obj){
+    qss[obj._id] = obj;
+  });
+
+  console.log(qss);
+
+  $.ajax({
+    type: 'POST',
+    url: "GetQSFullPath",
+    dataType: 'json',
+    data: JSON.stringify(qss),
+    success: function(data) {
+    console.log(data);
+    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+    if(data.DATAS != null && data.DATAS){
+      if(Object.keys(data.DATAS).length > 0){
+        $.each(data.DATAS, function(key, value){
+          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + value + '">' + key + '</option>';
+          $('#selectExpressionQS').append(option);
+        })
+      }
+    }
+
+    $('#selectExpressionQS').append(emptyOption);
+    $('#selectExpressionQS').selectpicker('val', "");
+    $('#selectExpressionQS').selectpicker('refresh');
+    $("#ExpressionModal").modal('toggle');
+
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+
+}
+
 function BuildExpression(){
 
   if($activeSubDatasTable != undefined && selectedField){
     console.log($("#taExpression").val());
-    selectedField.expression = $("#taExpression").val()
+    selectedField.expression = $("#taExpression").val();
     updateRow($activeSubDatasTable, selectedField.index, selectedField);
 
   }
@@ -2182,8 +2297,8 @@ function buildFieldTable($el, cols, data, qs){
                 var fieldName = qs.table_alias + "." + row.field_name;
                 $("#ExpressionFieldName").text(fieldName);
                 $("#taExpression").val(row.expression);
-                $("#ExpressionModal").modal('toggle');
                 selectedField = row;
+                loadSelectExpressionQS();
 
                 break;
 

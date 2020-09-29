@@ -26,7 +26,7 @@ public class test16 {
 		}
 		
 		List<QuerySubject> qssList = (List<QuerySubject>) Tools.fromJSON(path.toFile(), new TypeReference<List<QuerySubject>>(){});
-		System.out.println(qssList.size());
+//		System.out.println(qssList.size());
 		
 		Map<String, QuerySubject> qss = new HashMap<String, QuerySubject>(); 
 		
@@ -52,7 +52,7 @@ public class test16 {
 		        }
 				
 				
-				System.out.println("[FINAL].[" + qsFinalName + "]");
+				System.out.println(qs.getKey() + ";[FINAL].[" + qsFinalName + "]");
 				
 				recurse0(qsAlias, gDirName, qsFinalName, qSleftType, qss, recurseCount);
 				
@@ -99,7 +99,9 @@ public class test16 {
 					gDirNameCurrent = gDirName + "." + rel.getAbove();
 				}					
 				
-				System.out.println("[REF].[" + qsFinalName + gDirNameCurrent + "]");
+//				if(query_subject.getType().equalsIgnoreCase("Ref")) {
+					System.out.println(pkAlias + "Ref" + ";[REF].[" + qsFinalName + gDirNameCurrent + "]");
+//				}
 				
 				recurse0(pkAlias, gDirNameCurrent, qsFinalName, "Ref" ,qss, copyRecurseCount);	
 			}
