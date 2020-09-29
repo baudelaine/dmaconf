@@ -1410,10 +1410,7 @@ function BuildFilter(){
       filters[filterName] = filter;
     }
 
-    console.log(selectedQS);
-    updateRow($("#DatasTable"), selectedQS.index, selectedQS);
     $("#DatasTable").bootstrapTable('updateRow', {index: selectedQS.index, row: selectedQS});
-    console.log($("#DatasTable").bootstrapTable('getData'));
 
   }
 
