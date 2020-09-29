@@ -30,6 +30,7 @@ public class QuerySubject {
 	Map<String, String> labels = new HashMap<String, String>();
 	Map<String, String> descriptions = new HashMap<String, String>();
 	String merge = "";
+	Map<String, Filter> filters = new HashMap<String, Filter>(); 
 	
 	
 	public String getFolder() {
@@ -181,6 +182,12 @@ public class QuerySubject {
 	}
 	public void setMerge(String merge) {
 		this.merge = merge;
+	}
+	public Map<String, Filter> getFilters() {
+		return filters;
+	}
+	public void setFilters(Map<String, Filter> filters) {
+		this.filters = filters;
 	}
 	
 }

@@ -18,9 +18,11 @@ public class test17 {
 		// TODO Auto-generated method stub
 
 		Path path = Paths.get("/home/fr054721/dmaconf/qss.json");
-//		String selectedQs = "AUTORIZATION_LINEFinal";
-		String selectedQs = "TYPRISERef";
+		String selectedQs = "AUTORIZATION_LINEFinal";
+//		String selectedQs = "TYPRISERef";
 //		String selectedQs = "PTA_PRNRef";
+//		String selectedQs = "OGRef";
+		
 		
 		
 		if(!Files.exists(path)) {

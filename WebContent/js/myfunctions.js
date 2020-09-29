@@ -30,6 +30,7 @@ var langGlobal = [];
 var labelsGlobal = {};
 var $selectedDimension;
 var selectedField;
+var selectedQS;
 var currentProject;
 // var currentLanguage;
 
@@ -137,7 +138,7 @@ qsCols.push({field:"folder", title: "Folder", editable: {
 });
 // qsCols.push({field:"folder", title: "Folder", editable: {type: "select", mode: "inline"}, sortable: true});
 // qsCols.push({field:"folder", title: "Folder", editable: {type: "text", mode: "inline"}, sortable: true});
-qsCols.push({field:"filter", title: "filter", editable: {type: "textarea", mode: "inline"}, sortable: true});
+qsCols.push({field:"filters", title: "filters", formatter: "filtersFormatter", align: "center"});
 qsCols.push({field:"secFilter", title: "security filters", editable: {type: "textarea", mode: "inline"}, sortable: true});
 qsCols.push({field:"label", title: "label", editable: {type: "textarea", mode: "inline"}, sortable: true});
 qsCols.push({field:"description", title: "Description", sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
@@ -385,7 +386,7 @@ $viewTab.on('shown.bs.tab', function(e) {
   $datasTable.bootstrapTable('hideColumn', 'addPKRelation');
   $datasTable.bootstrapTable('showColumn', 'addField');
   $datasTable.bootstrapTable('hideColumn', 'merge');
-  $datasTable.bootstrapTable('hideColumn', 'table_alias');
+  // $datasTable.bootstrapTable('hideColumn', 'table_alias');
   // $datasTable.bootstrapTable('showColumn', 'addFolder');
   // $datasTable.bootstrapTable('showColumn', 'addDimensionName');
   $datasTable.bootstrapTable('hideColumn', 'recurseCount');
@@ -1317,6 +1318,293 @@ $('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSe
 
 });
 
+function AddFilter(){
+
+  console.log(selectedQS);
+
+  bootbox.prompt({
+    size: "small",
+    title: "Enter filter name",
+    callback: function(result){
+      var status = 'OK';
+      filterName = result;
+      if(!filterName){
+        return;
+      }
+
+      if(selectedQS){
+        if(!jQuery.isEmptyObject(selectedQS.filters)){
+          if(Object.keys(selectedQS.filters).length > 0){
+            $.each(Object.keys(selectedQS.filters), function(key){
+              if(key == filterName.toUpperCase()){
+                ShowAlert(filterName + " already exists.", "alert-warning", $("#FiltersModalAlert"));
+                status = 'KO';
+                return;
+              }
+            })
+          }
+        }
+      }
+
+      if(status == 'OK'){
+
+        var parms = {"filterName": filterName}; 
+        console.log(parms);
+
+        $.ajax({
+          type: 'POST',
+          url: "GetNewFilter",
+          dataType: 'json',
+          data: JSON.stringify(parms),
+
+          success: function(data) {
+            console.log(data);
+            if(data.DATAS && selectedQS){
+              var nameOption = '<option class="fontsize" value="' + data.DATAS.name + '" data-subtext="' + '' + '">' + data.DATAS.name + '</option>';
+              $('#selectFilterName').append(nameOption);
+              $('#selectFilterName').selectpicker('val', data.DATAS.name);
+              $('#selectFilterName').selectpicker('refresh');
+              var mandatoryOption = '<option class="fontsize" value="' + data.DATAS.option + '" data-subtext="' + '' + '">' + data.DATAS.option + '</option>';
+              $('#selectFilterOption').append(mandatoryOption);
+              var facultativeOption = '<option class="fontsize" value="' + "Facultative" + '" data-subtext="' + '' + '">' + "Facultative" + '</option>';
+              $('#selectFilterOption').append(facultativeOption);
+              $('#selectFilterOption').selectpicker('val', data.DATAS.option);
+              $('#selectFilterOption').selectpicker('refresh');
+
+
+
+            }
+                        
+          },
+          error: function(data) {
+              console.log(data);
+          }
+        });
+      }
+
+    }
+  });  
+
+}
+
+function BuildFilter(){
+
+  if(selectedQS){
+
+    var filterName = $("#selectFilterName").find("option:selected").val();
+    var filterOption = $("#selectFilterOption").find("option:selected").val();
+    var filterTarget = $("#selectFilterTarget").find("option:selected").val();
+    var filterExpression = $("#taFilterExpression").val();
+
+    var filter = {"filterName": filterName, "filterOption": filterOption, "filterTarget": filterTarget, "filterExpression": filterExpression};
+
+    if(jQuery.isEmptyObject(selectedQS.filters)){
+      console.log(selectedQS.filters);
+      var filters = {};
+      filters[filterName] = filter;
+      selectedQS.filters = filters
+    }
+    else{
+      console.log(selectedQS.filters);
+      filters = selectedQS.filters;
+      filters[filterName] = filter;
+    }
+
+    console.log(selectedQS);
+    updateRow($("#DatasTable"), selectedQS.index, selectedQS);
+    $("#DatasTable").bootstrapTable('updateRow', {index: selectedQS.index, row: selectedQS});
+    console.log($("#DatasTable").bootstrapTable('getData'));
+
+  }
+
+  $('#FiltersModal').modal('toggle');
+
+
+}
+
+function loadSelectFilterTarget(){
+
+  $('#selectFilterTarget').empty();
+  $('#selectFilterTarget').selectpicker('refresh');
+
+  if(!selectedQS){
+    return;
+  }
+
+  var qss = {};
+  var selectedQs = selectedQS._id;
+
+  $.each($datasTable.bootstrapTable("getData"), function(i, obj){
+    qss[obj._id] = obj;
+  });
+
+  var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
+  console.log(parms);
+
+  $.ajax({
+    type: 'POST',
+    url: "GetFilterTarget",
+    dataType: 'json',
+    data: JSON.stringify(parms),
+
+    success: function(data) {
+    console.log(data);
+    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+    var allOption = '<option class="fontsize" value="' + "*" + '" data-subtext="All">' + "*" + '</option>';
+    var isRef = true;
+    var defaultValue = "*";
+
+    if(data.DATAS != null && data.DATAS){
+      if(Object.keys(data.DATAS).length > 0){
+        // var exp = "\\[\\."
+        // var regex = new RegExp(exp, "gi");
+        $.each(data.DATAS, function(key, value){
+          if(value.endsWith("Final")){
+            isRef = false;
+            defaultValue = key;
+          }
+          key = key.replace("[.", "[");
+          var option = '<option class="fontsize" value="' + key + '" data-subtext="' + value + '">' + key + '</option>';
+          $('#selectFilterTarget').append(option);
+        })
+      }
+    }
+
+    if(isRef){
+      $('#selectFilterTarget').append(allOption);
+    }
+    $('#selectFilterTarget').selectpicker('val', defaultValue);
+    $('#selectFilterTarget').selectpicker('refresh');
+
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });  
+}
+
+function AddFilterExpression(){
+
+  var selectedField = $('#selectFilterField').find("option:selected").val();
+
+  var expression = $("#taFilterExpression").val();
+
+  if(expression.length > 0){
+    $("#taFilterExpression").val(expression + " " + selectedField);
+  }
+  else{
+    $("#taFilterExpression").val(selectedField);
+  }
+
+}
+
+
+$('#selectFilterQS').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+
+  $('#selectFilterField').empty();
+  $('#selectFilterField').selectpicker('refresh');
+
+  var qss = {};
+  var selectedQs = $(this).find("option:selected").val();
+  console.log(selectedQs);
+
+  $.each($datasTable.bootstrapTable("getData"), function(i, obj){
+    qss[obj._id] = obj;
+  });
+
+  var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
+  console.log(parms);
+
+  $.ajax({
+    type: 'POST',
+    url: "GetFieldsFullPath",
+    dataType: 'json',
+    data: JSON.stringify(parms),
+    success: function(data) {
+    console.log(data);
+    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+    if(data.DATAS != null && data.DATAS){
+      if(Object.keys(data.DATAS).length > 0){
+        // var exp = "\\[\\."
+        // var regex = new RegExp(exp, "gi");
+        $.each(data.DATAS, function(key, value){
+          key = key.replace("[.", "[");
+          var option = '<option class="fontsize" value="' + key + '" data-subtext="' + value + '">' + key + '</option>';
+          $('#selectFilterField').append(option);
+        })
+      }
+    }
+
+    $('#selectFilterField').append(emptyOption);
+    $('#selectFilterField').selectpicker('val', "");
+    $('#selectFilterField').selectpicker('refresh');
+
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+
+
+});
+
+
+function loadSelectFilterQS(){
+
+  // $('#selectFilterName').empty();
+  // $('#selectFilterName').selectpicker('refresh');
+
+  // $('#selectFilterOption').empty();
+  // $('#selectFilterOption').selectpicker('refresh');
+
+  // $('#selectFilterTarget').empty();
+  // $('#selectFilterTarget').selectpicker('refresh');
+
+  $('#selectFilterQS').empty();
+  $('#selectFilterQS').selectpicker('refresh');
+
+  $('#selectFilterField').empty();
+  $('#selectFilterField').selectpicker('refresh');
+
+  var qss = {};
+  $.each($datasTable.bootstrapTable("getData"), function(i, obj){
+    qss[obj._id] = obj;
+  });
+
+  console.log(qss);
+
+  $.ajax({
+    type: 'POST',
+    url: "GetQSFullPath",
+    dataType: 'json',
+    data: JSON.stringify(qss),
+    success: function(data) {
+    console.log(data);
+    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+    if(data.DATAS != null && data.DATAS){
+      if(Object.keys(data.DATAS).length > 0){
+        $.each(data.DATAS, function(key, value){
+          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + value + '">' + key + '</option>';
+          $('#selectFilterQS').append(option);
+        })
+      }
+    }
+
+    $('#selectFilterQS').append(emptyOption);
+    $('#selectFilterQS').selectpicker('val', "");
+    $('#selectFilterQS').selectpicker('refresh');
+    $("#FiltersModal").modal('toggle');
+
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });  
+
+}
+
 function loadSelectExpressionQS(){
 
   $('#selectExpressionQS').empty();
@@ -1405,6 +1693,15 @@ function aboveFormatter(value, row, index){
 function dimensionsFormatter (value, row, index) {
   if(row.dimensions.length > 0){
     return row.dimensions[0].dimension + "...";
+  }
+  else{
+    return '';
+  }
+}
+
+function filtersFormatter (value, row, index) {
+  if(Object.keys(row.filters).length > 0){
+    return "...";
   }
   else{
     return '';
@@ -3086,6 +3383,16 @@ function buildTable($el, cols, data) {
         onClickCell: function (field, value, row, $element){
 
           $activeSubDatasTable = $el
+
+          if(field.match("filters")){
+            console.log("filters was clicked");
+            console.log(row);
+            $("#FiltersQSName").text(row.table_alias);
+            selectedQS = row;
+            loadSelectFilterQS();
+            loadSelectFilterTarget();
+
+          }
 
           if(field.match('folder') && $('#foldSelect option').length == 1){
             showalert("buildTable()", 'No folder created yet. Create one clicking <i class="glyphicon glyphicon-folder-open"></i> in the toolbar.', "alert-warning", "bottom");
