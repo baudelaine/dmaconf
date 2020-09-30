@@ -298,11 +298,13 @@
 
 						<div id="FiltersModalAlert"></div>
 
+
 						<div class="row">
 							<h4>Name</h4>
 									<div class="input-group-btn">
-								<select class="selectpicker form-control dropup" data-dropup-auto="false" id="selectFilterName" data-width="93%" data-live-search="true"></select>
+								<select class="selectpicker form-control" data-dropup-auto="false" id="selectFilterName" data-width="86%" data-live-search="true"></select>
 										<button type="button" class="btn btn-default" onclick="AddFilter()" data-toggle="tooltip" data-placement="top" title="Add Filter."><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></button>
+										<button type="button" class="btn btn-default" onclick="DeleteFilter()" data-toggle="tooltip" data-placement="top" title="Delete Filter."><span class="glyphicon glyphicon-trash" aria-hidden="true"></button>
 								</div>
 						</div>
 	
@@ -326,7 +328,7 @@
 						<div class="row">
 							<h4>Fields</h4>
 									<div class="input-group-btn">
-								<select class="selectpicker form-control dropup" data-dropup-auto="false" id="selectFilterField" data-width="93%" data-live-search="true"></select>
+								<select class="selectpicker form-control" data-dropup-auto="false" id="selectFilterField" data-width="93%" data-live-search="true"></select>
 										<button type="button" class="btn btn-default" onclick="AddFilterExpression()" data-toggle="tooltip" data-placement="top" title="Add expression."><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></button>
 								</div>
 						</div>
@@ -334,8 +336,9 @@
 										<h4>Expression</h4>
 										<textarea id="taFilterExpression" class="form-control" placeholder="..." rows="3"></textarea>
 							</div>
-
+	
 						</div>
+
 
 					</div> <!-- /.modal-body -->
 			<div class="modal-footer">
@@ -1119,7 +1122,7 @@
 						<select class="selectpicker" data-style="btn-default" id="tables" data-live-search="true" title="Tables..."></select>
 						<button type="button" id="magnet" onclick="GetQuerySubjects()"class="btn btn-default dropdown-toggle" data-toggle="tooltip" data-placement="top" title="Get Query Subject."><span class="glyphicon glyphicon-magnet" aria-hidden="true"></span></button>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
 						</button>
 						<input type="hidden" id="alias" value=""/>
 						<ul class="dropdown-menu" id="tablesMenu">
@@ -1142,7 +1145,7 @@
 					<div class="input-group-btn">
 						<select class="selectpicker" data-style="btn-default" id="qsSelect" data-live-search="true" title="Query Subjets..."></select>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
 						</button>
 						<input type="hidden" id="alias" value=""/>
 						<ul class="dropdown-menu" id="qsMenu">
@@ -1167,7 +1170,7 @@
 					<div class="input-group-btn">
 						<select class="selectpicker" data-style="btn-default" id="langSelect" data-live-search="false" title="Languages..."></select>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
 						</button>
 						<ul class="dropdown-menu" id="langMenu">
 							<li><a href="#" id="addLangMenu">Add</a></li>

@@ -1318,6 +1318,49 @@ $('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSe
 
 });
 
+function DeleteFilter(){
+
+  var selectedFilter = $('#selectFilterName').find("option:selected").val();
+
+  if(!selectedFilter){
+    ShowAlert("No filter selected.", "alert-warning", $("#FiltersModalAlert"));
+    return;
+  }
+
+  var selectedOption = $('#selectFilterName option:selected');
+
+  if(selectedQS && selectedFilter){
+
+    bootbox.confirm({
+      message: "Do you really want to delete <strong>" + selectedFilter + "</strong> ?",
+      buttons: {
+          confirm: {
+              label: 'Yes',
+              className: 'btn-primary'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-default'
+          }
+      },
+      callback: function (result) {
+  
+        if(!result){
+          return;
+        }
+
+        delete selectedQS.filters[selectedFilter];
+        $("#DatasTable").bootstrapTable('updateRow', {index: selectedQS.index, row: selectedQS});
+        console.log($("#DatasTable").bootstrapTable('getData'));
+        selectedOption.remove();
+        $('#selectFilterName').selectpicker('refresh');
+        $('#selectFilterName').trigger('change');
+      }
+
+    });
+  }
+}
+
 function AddFilter(){
 
   console.log(selectedQS);
@@ -1335,8 +1378,9 @@ function AddFilter(){
       if(selectedQS){
         if(!jQuery.isEmptyObject(selectedQS.filters)){
           if(Object.keys(selectedQS.filters).length > 0){
-            $.each(Object.keys(selectedQS.filters), function(key){
-              if(key == filterName.toUpperCase()){
+            $.each(Object.keys(selectedQS.filters), function(index, key){
+              console.log(key);
+              if(key.toUpperCase() == filterName.toUpperCase()){
                 ShowAlert(filterName + " already exists.", "alert-warning", $("#FiltersModalAlert"));
                 status = 'KO';
                 return;
@@ -1364,13 +1408,13 @@ function AddFilter(){
               $('#selectFilterName').append(nameOption);
               $('#selectFilterName').selectpicker('val', data.DATAS.name);
               $('#selectFilterName').selectpicker('refresh');
-              var mandatoryOption = '<option class="fontsize" value="' + data.DATAS.option + '" data-subtext="' + '' + '">' + data.DATAS.option + '</option>';
-              $('#selectFilterOption').append(mandatoryOption);
-              var facultativeOption = '<option class="fontsize" value="' + "Facultative" + '" data-subtext="' + '' + '">' + "Facultative" + '</option>';
-              $('#selectFilterOption').append(facultativeOption);
               $('#selectFilterOption').selectpicker('val', data.DATAS.option);
               $('#selectFilterOption').selectpicker('refresh');
+              $('#selectFilterName').trigger('change');
 
+              if(selectedQS.type == "Ref"){
+                $('#selectFilterTarget').selectpicker('val', "*");
+              }
 
 
             }
@@ -1391,30 +1435,49 @@ function BuildFilter(){
 
   if(selectedQS){
 
-    var filterName = $("#selectFilterName").find("option:selected").val();
-    var filterOption = $("#selectFilterOption").find("option:selected").val();
-    var filterTarget = $("#selectFilterTarget").find("option:selected").val();
-    var filterExpression = $("#taFilterExpression").val();
+    var name = $("#selectFilterName").find("option:selected").val();
+    var option = $("#selectFilterOption").find("option:selected").val();
+    var target = $("#selectFilterTarget").find("option:selected").val();
+    var expression = $("#taFilterExpression").val();
 
-    var filter = {"filterName": filterName, "filterOption": filterOption, "filterTarget": filterTarget, "filterExpression": filterExpression};
+    if(expression.length == 0){
+      ShowAlert("Filter expression can't be empty.", "alert-warning", $("#FiltersModalAlert"));
+      return;
+    }
+
+    var filter = {"name": name, "option": option, "target": target, "expression": expression};
 
     if(jQuery.isEmptyObject(selectedQS.filters)){
       console.log(selectedQS.filters);
       var filters = {};
-      filters[filterName] = filter;
+      filters[name] = filter;
       selectedQS.filters = filters
     }
     else{
       console.log(selectedQS.filters);
       filters = selectedQS.filters;
-      filters[filterName] = filter;
+      filters[name] = filter;
     }
 
     $("#DatasTable").bootstrapTable('updateRow', {index: selectedQS.index, row: selectedQS});
 
+
   }
 
   $('#FiltersModal').modal('toggle');
+
+  console.log($("#DatasTable").bootstrapTable('getData'));
+
+}
+
+function loadSelectFilterOption(){
+
+  $('#selectFilterOption').empty();
+  var mandatoryOption = '<option class="fontsize" value="' + "Mandatory" + '" data-subtext="' + '' + '">' + "Mandatory" + '</option>';
+  $('#selectFilterOption').append(mandatoryOption);
+  var facultativeOption = '<option class="fontsize" value="' + "Facultative" + '" data-subtext="' + '' + '">' + "Facultative" + '</option>';
+  $('#selectFilterOption').append(facultativeOption);
+  $('#selectFilterOption').selectpicker('refresh');
 
 
 }
@@ -1470,6 +1533,14 @@ function loadSelectFilterTarget(){
     if(isRef){
       $('#selectFilterTarget').append(allOption);
     }
+
+    var selectedFilter = $('#selectFilterName').find("option:selected").val();
+    if(selectedFilter){
+      console.log("...");
+      var filter = selectedQS.filters[selectedFilter];
+      defaultValue = filter.target;
+    }
+
     $('#selectFilterTarget').selectpicker('val', defaultValue);
     $('#selectFilterTarget').selectpicker('refresh');
 
@@ -1495,6 +1566,32 @@ function AddFilterExpression(){
 
 }
 
+$('#selectFilterName').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+
+  var filterName = $(this).find("option:selected").val();
+
+  var filter = selectedQS.filters[filterName];
+
+  if(filter){
+    var name = filter.name;
+    var option = filter.option;
+    var target = filter.target;
+    var expression = filter.expression;
+
+    $('#selectFilterName').selectpicker('val', name);
+    $('#selectFilterOption').selectpicker('val', option);
+    $('#selectFilterTarget').selectpicker('val', target);
+    $("#taFilterExpression").val(expression);  
+
+    $('#selectFilterName').selectpicker('refresh');
+    $('#selectFilterOption').selectpicker('refresh');;
+    $('#selectFilterTarget').selectpicker('refresh');;
+  }
+  else{
+    $("#taFilterExpression").val("");
+  }
+
+});  
 
 $('#selectFilterQS').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
 
@@ -1549,15 +1646,6 @@ $('#selectFilterQS').on('changed.bs.select', function (e, clickedIndex, isSelect
 
 function loadSelectFilterQS(){
 
-  // $('#selectFilterName').empty();
-  // $('#selectFilterName').selectpicker('refresh');
-
-  // $('#selectFilterOption').empty();
-  // $('#selectFilterOption').selectpicker('refresh');
-
-  // $('#selectFilterTarget').empty();
-  // $('#selectFilterTarget').selectpicker('refresh');
-
   $('#selectFilterQS').empty();
   $('#selectFilterQS').selectpicker('refresh');
 
@@ -1592,6 +1680,7 @@ function loadSelectFilterQS(){
     $('#selectFilterQS').append(emptyOption);
     $('#selectFilterQS').selectpicker('val', "");
     $('#selectFilterQS').selectpicker('refresh');
+
     $("#FiltersModal").modal('toggle');
 
     },
@@ -1600,6 +1689,40 @@ function loadSelectFilterQS(){
     }
   });  
 
+}
+
+function loadSelectFilterName(){
+
+  $('#selectFilterName').empty();
+
+  if(selectedQS){
+    if(!jQuery.isEmptyObject(selectedQS.filters)){
+      if(Object.keys(selectedQS.filters).length > 0){
+        $.each(Object(selectedQS.filters), function(key, value){
+          console.log(key);
+          console.log(value.name);
+          var option = '<option class="fontsize" value="' + value.name + '" data-subtext="' + '' + '">' + value.name + '</option>';
+          $('#selectFilterName').append(option);
+        })
+      }
+      var firstName = Object.values(selectedQS.filters)[0].name;
+      var firstOption = Object.values(selectedQS.filters)[0].option;
+      var firstTarget = Object.values(selectedQS.filters)[0].target;
+      var firstExpression = Object.values(selectedQS.filters)[0].expression;
+
+      $('#selectFilterName').selectpicker('val', firstName);
+      $('#selectFilterOption').selectpicker('val', firstOption);
+      $('#selectFilterTarget').selectpicker('val', firstTarget);
+      $("#taFilterExpression").val(firstExpression);
+
+    }
+    else{
+      $("#taFilterExpression").val("");
+    }
+  }
+  $('#selectFilterName').selectpicker('refresh');
+  $('#selectFilterOption').selectpicker('refresh');;
+  $('#selectFilterTarget').selectpicker('refresh');;
 }
 
 function loadSelectExpressionQS(){
@@ -1698,7 +1821,11 @@ function dimensionsFormatter (value, row, index) {
 
 function filtersFormatter (value, row, index) {
   if(Object.keys(row.filters).length > 0){
-    return "...";
+    return [
+      '<a class="addRelation" href="javascript:void(0)" title="Edit Filters">',
+      '<i class="glyphicon glyphicon-edit"></i>',
+      '</a>'
+    ].join('');
   }
   else{
     return '';
@@ -1707,7 +1834,11 @@ function filtersFormatter (value, row, index) {
 
 function expressionFormatter (value, row, index) {
   if(row.expression.length > 0){
-    return "...";
+    return [
+      '<a class="addRelation" href="javascript:void(0)" title="Edit Expression">',
+      '<i class="glyphicon glyphicon-edit"></i>',
+      '</a>'
+    ].join('');
   }
   else{
     return '';
@@ -3388,7 +3519,8 @@ function buildTable($el, cols, data) {
             selectedQS = row;
             loadSelectFilterQS();
             loadSelectFilterTarget();
-
+            loadSelectFilterOption();
+            loadSelectFilterName()        
           }
 
           if(field.match('folder') && $('#foldSelect option').length == 1){
