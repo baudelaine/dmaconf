@@ -1440,6 +1440,11 @@ function BuildFilter(){
     var target = $("#selectFilterTarget").find("option:selected").val();
     var expression = $("#taFilterExpression").val();
 
+    if(!name || name.length == 0){
+      ShowAlert("Filter name can't be empty.", "alert-warning", $("#FiltersModalAlert"));
+      return;
+    }
+
     if(expression.length == 0){
       ShowAlert("Filter expression can't be empty.", "alert-warning", $("#FiltersModalAlert"));
       return;
@@ -1553,15 +1558,16 @@ function loadSelectFilterTarget(){
 
 function AddFilterExpression(){
 
+  var selectedTarget = $('#selectFilterTarget').find("option:selected").val(); 
   var selectedField = $('#selectFilterField').find("option:selected").val();
 
   var expression = $("#taFilterExpression").val();
 
   if(expression.length > 0){
-    $("#taFilterExpression").val(expression + " " + selectedField);
+    $("#taFilterExpression").val(expression + " " + selectedTarget + ".[" + selectedField + "]");
   }
   else{
-    $("#taFilterExpression").val(selectedField);
+    $("#taFilterExpression").val(selectedTarget + ".[" + selectedField + "]");
   }
 
 }
@@ -1624,7 +1630,7 @@ $('#selectFilterQS').on('changed.bs.select', function (e, clickedIndex, isSelect
         // var regex = new RegExp(exp, "gi");
         $.each(data.DATAS, function(key, value){
           key = key.replace("[.", "[");
-          var option = '<option class="fontsize" value="' + key + '" data-subtext="' + value + '">' + key + '</option>';
+          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
           $('#selectFilterField').append(option);
         })
       }
@@ -3515,7 +3521,7 @@ function buildTable($el, cols, data) {
           if(field.match("filters")){
             console.log("filters was clicked");
             console.log(row);
-            $("#FiltersQSName").text(row.table_alias);
+            $("#FiltersQSName").text(row._id);
             selectedQS = row;
             loadSelectFilterQS();
             loadSelectFilterTarget();
