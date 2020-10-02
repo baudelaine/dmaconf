@@ -82,7 +82,7 @@ public class GetFieldsFullPathServlet extends HttpServlet {
 						if(qs.getValue()._id.equalsIgnoreCase(selectedQs)) {
 							System.out.println("[FINAL].[" + qsFinalName + "]");
 							for(Field field: qs.getValue().getFields()){
-								datas.put("[DATA].[" + qsFinalName + "]." + "[" + field.getField_name() + "]", field.getField_name());
+								datas.put("[FINAL].[" + qsFinalName + "]." + "[" + field.getField_name() + "]", field.getField_name());
 							}
 						}
 						
@@ -164,7 +164,7 @@ public class GetFieldsFullPathServlet extends HttpServlet {
 				
 				if((pkAlias + "Ref").equalsIgnoreCase((selectedQs))) {
 					for(Field field: qss.get(pkAlias + "Ref").getFields()){
-						datas.put("[DATA].[" + qsFinalName + "].[" + gDirName + "." + field.getField_name() +"]", field.getField_name());
+						datas.put("[REF].[" + qsFinalName + "." + gDirNameCurrent + "].[" + field.getField_name() +"]", field.getField_name());
 					}
 				}
 

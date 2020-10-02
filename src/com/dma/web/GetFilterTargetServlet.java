@@ -160,7 +160,7 @@ public class GetFilterTargetServlet extends HttpServlet {
 				}					
 				
 				if((pkAlias + "Ref").equalsIgnoreCase((selectedQs))) {
-					datas.put("[REF].[" + qsFinalName + gDirName + "]", selectedQs);
+					datas.put("[REF].[" + qsFinalName + gDirNameCurrent + "]", selectedQs);
 				}
 
 				recurse0(pkAlias, gDirNameCurrent, qsFinalName, "Ref" ,qss, copyRecurseCount, selectedQs, datas);	

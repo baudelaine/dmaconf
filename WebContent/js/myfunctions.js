@@ -1255,15 +1255,16 @@ $("#ExpressionModal").on('shown.bs.modal', function(){
 
 function AddExpression(){
 
-  var selectedField = $('#selectExpressionField').find("option:selected").val();
+  var selectedQS = $('#selectExpressionQS').find("option:selected").text();
+  var selectedField = $('#selectExpressionField').find("option:selected").text();
 
   var expression = $("#taExpression").val();
 
   if(expression.length > 0){
-    $("#taExpression").val(expression + " " + selectedField);
+    $("#taExpression").val(expression + " " + selectedQS + ".[" + selectedField + "]");
   }
   else{
-    $("#taExpression").val(selectedField);
+    $("#taExpression").val(selectedQS + ".[" + selectedField + "]");
   }
 
 }
@@ -1299,7 +1300,7 @@ $('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSe
         // var regex = new RegExp(exp, "gi");
         $.each(data.DATAS, function(key, value){
           key = key.replace("[.", "[");
-          var option = '<option class="fontsize" value="' + key + '" data-subtext="' + value + '">' + key + '</option>';
+          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
           $('#selectExpressionField').append(option);
         })
       }

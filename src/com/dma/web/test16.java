@@ -17,7 +17,7 @@ public class test16 {
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
-		Path path = Paths.get("/home/fr054721/dmaconf/qss.json");
+		Path path = Paths.get("/home/dma/dma/cda0/models/mdl1-short.json");
 		
 		
 		if(!Files.exists(path)) {
