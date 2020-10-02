@@ -1558,16 +1558,16 @@ function loadSelectFilterTarget(){
 
 function AddFilterExpression(){
 
-  var selectedTarget = $('#selectFilterTarget').find("option:selected").val(); 
+  var selectedQS = $('#selectFilterQS').find("option:selected").text(); 
   var selectedField = $('#selectFilterField').find("option:selected").val();
 
   var expression = $("#taFilterExpression").val();
 
   if(expression.length > 0){
-    $("#taFilterExpression").val(expression + " " + selectedTarget + ".[" + selectedField + "]");
+    $("#taFilterExpression").val(expression + " " + selectedQS + ".[" + selectedField + "]");
   }
   else{
-    $("#taFilterExpression").val(selectedTarget + ".[" + selectedField + "]");
+    $("#taFilterExpression").val(selectedQS + ".[" + selectedField + "]");
   }
 
 }
@@ -1826,12 +1826,18 @@ function dimensionsFormatter (value, row, index) {
 }
 
 function filtersFormatter (value, row, index) {
-  if(Object.keys(row.filters).length > 0){
-    return [
-      '<a class="addRelation" href="javascript:void(0)" title="Edit Filters">',
-      '<i class="glyphicon glyphicon-edit"></i>',
-      '</a>'
-    ].join('');
+  console.log(row);
+  if(row.filters){
+    if(Object.keys(row.filters).length > 0){
+      return [
+        '<a class="addRelation" href="javascript:void(0)" title="Edit Filters">',
+        '<i class="glyphicon glyphicon-edit"></i>',
+        '</a>'
+      ].join('');
+    }
+    else{
+      return '';
+    }
   }
   else{
     return '';
