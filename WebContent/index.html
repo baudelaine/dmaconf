@@ -368,6 +368,9 @@
 						<div class="container-fluid">
 							<div id="modDivLoading"></div>
 
+						<div id="ExpressionModalAlert"></div>
+
+
 						<div class="row">
 							<h4>Query Subjects</h4>
 							<select class="selectpicker form-control" id="selectExpressionQS" data-live-search="true">
@@ -376,9 +379,10 @@
 						<div class="row">
 							<h4>Fields</h4>
 									<div class="input-group-btn">
-								<select class="selectpicker form-control" data-dropup-auto="false" id="selectExpressionField" data-width="93%" data-live-search="true"></select>
+								<select class="selectpicker form-control" data-dropup-auto="false" id="selectExpressionField" data-width="86%" data-live-search="true"></select>
 										<button type="button" class="btn btn-default" onclick="AddExpression()" data-toggle="tooltip" data-placement="top" title="Add expression."><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></button>
-								</div>
+										<button type="button" class="btn btn-default" onclick="AddExpressionData()" data-toggle="tooltip" data-placement="top" title="Add expression [DATA]."><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></button>
+									</div>
 						</div>
 							<div class="row">
 										<h4>Expression</h4>

@@ -1253,18 +1253,58 @@ $("#ExpressionModal").on('shown.bs.modal', function(){
 
 });
 
-function AddExpression(){
+function AddExpressionData(){
 
-  var selectedQS = $('#selectExpressionQS').find("option:selected").text();
+  var selectedQs = $('#selectExpressionQS').find("option:selected").text();
   var selectedField = $('#selectExpressionField').find("option:selected").text();
+
+  if(selectedQs == "*"){
+    AddExpression();
+    return;
+  }
+
+  if(!selectedQs || !selectedField){
+    ShowAlert("Select one Query Subject and one Field.", "alert-warning", $("#ExpressionModalAlert"));
+    return;    
+  }
+
+  var dataExpression = selectedQs.replace("[FINAL].","");
+  dataExpression = dataExpression.replace("[REF].","");
+  dataExpression = dataExpression.replace("[","");
+  dataExpression = dataExpression.replace("]","");
+  console.log(dataExpression);
+
+  dataExpression = "[DATA].[" + dataExpression.substr(0, dataExpression.indexOf(".")) + 
+    "].[" + dataExpression.substr(dataExpression.indexOf(".") + 1) + "." + selectedField + "]";
 
   var expression = $("#taExpression").val();
 
   if(expression.length > 0){
-    $("#taExpression").val(expression + " " + selectedQS + ".[" + selectedField + "]");
+    $("#taExpression").val(expression + " " + dataExpression);
   }
   else{
-    $("#taExpression").val(selectedQS + ".[" + selectedField + "]");
+    $("#taExpression").val(dataExpression);
+  }
+  
+}
+
+function AddExpression(){
+
+  var selectedQs = $('#selectExpressionQS').find("option:selected").text();
+  var selectedField = $('#selectExpressionField').find("option:selected").text();
+
+  if(!selectedQs || !selectedField){
+    ShowAlert("Select one Query Subject and one Field.", "alert-warning", $("#ExpressionModalAlert"));
+    return;    
+  }
+
+  var expression = $("#taExpression").val();
+
+  if(expression.length > 0){
+    $("#taExpression").val(expression + " " + selectedQs + ".[" + selectedField + "]");
+  }
+  else{
+    $("#taExpression").val(selectedQs + ".[" + selectedField + "]");
   }
 
 }
@@ -1279,6 +1319,10 @@ $('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSe
   var selectedQsText = $(this).find("option:selected").text();
   console.log(selectedQs);
   var qs;
+
+  if(selectedQs == "*"){
+    selectedQs = selectedQS._id;
+  }
 
   $.each($datasTable.bootstrapTable("getData"), function(i, obj){
     if(obj._id == selectedQs){
@@ -1783,6 +1827,9 @@ function loadSelectExpressionQS(){
     success: function(data) {
     console.log(data);
     var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+    var allOption = '<option class="fontsize" value="' + "*" + '" data-subtext="All">' + "*" + '</option>';
+    $('#selectExpressionQS').append(emptyOption);
+    $('#selectExpressionQS').append(allOption);
 
     if(data.DATAS != null && data.DATAS){
       if(Object.keys(data.DATAS).length > 0){
@@ -1793,7 +1840,6 @@ function loadSelectExpressionQS(){
       }
     }
 
-    $('#selectExpressionQS').append(emptyOption);
     $('#selectExpressionQS').selectpicker('val', "");
     $('#selectExpressionQS').selectpicker('refresh');
     $("#ExpressionModal").modal('toggle');
@@ -1855,7 +1901,7 @@ function dimensionsFormatter (value, row, index) {
 }
 
 function filtersFormatter (value, row, index) {
-  console.log(row);
+  // console.log(row);
   if(row.filters){
     if(Object.keys(row.filters).length > 0){
       return [
@@ -2760,10 +2806,11 @@ function buildFieldTable($el, cols, data, qs){
 
               case "expression":
                 console.log(row);
-                var fieldName = qs.table_alias + "." + row.field_name;
+                var fieldName = qs._id + "." + row.field_name;
                 $("#ExpressionFieldName").text(fieldName);
                 $("#taExpression").val(row.expression);
                 selectedField = row;
+                selectedQS = qs;
                 loadSelectExpressionQS();
 
                 break;
