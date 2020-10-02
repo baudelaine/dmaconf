@@ -1268,14 +1268,21 @@ function AddExpressionData(){
     return;    
   }
 
-  var dataExpression = selectedQs.replace("[FINAL].","");
-  dataExpression = dataExpression.replace("[REF].","");
-  dataExpression = dataExpression.replace("[","");
-  dataExpression = dataExpression.replace("]","");
-  console.log(dataExpression);
+  var dataExpression;
 
-  dataExpression = "[DATA].[" + dataExpression.substr(0, dataExpression.indexOf(".")) + 
-    "].[" + dataExpression.substr(dataExpression.indexOf(".") + 1) + "." + selectedField + "]";
+  if(selectedQs.startsWith("[FINAL].")){
+    dataExpression = selectedQs.replace("[FINAL].","[DATA].") + ".[" + selectedField + "]";
+  }
+  else{
+    dataExpression = selectedQs;
+    dataExpression = dataExpression.replace("[REF].","");
+    dataExpression = dataExpression.replace("[","");
+    dataExpression = dataExpression.replace("]","");
+    console.log(dataExpression);
+
+    dataExpression = "[DATA].[" + dataExpression.substr(0, dataExpression.indexOf(".")) + 
+      "].[" + dataExpression.substr(dataExpression.indexOf(".") + 1) + "." + selectedField + "]";
+  }
 
   var expression = $("#taExpression").val();
 
