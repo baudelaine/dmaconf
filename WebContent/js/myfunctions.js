@@ -1276,45 +1276,57 @@ $('#selectExpressionQS').on('changed.bs.select', function (e, clickedIndex, isSe
 
   var qss = {};
   var selectedQs = $(this).find("option:selected").val();
+  var selectedQsText = $(this).find("option:selected").text();
   console.log(selectedQs);
+  var qs;
 
   $.each($datasTable.bootstrapTable("getData"), function(i, obj){
-    qss[obj._id] = obj;
-  });
-
-  var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
-  console.log(parms);
-
-  $.ajax({
-    type: 'POST',
-    url: "GetFieldsFullPath",
-    dataType: 'json',
-    data: JSON.stringify(parms),
-    success: function(data) {
-    console.log(data);
-    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
-
-    if(data.DATAS != null && data.DATAS){
-      if(Object.keys(data.DATAS).length > 0){
-        // var exp = "\\[\\."
-        // var regex = new RegExp(exp, "gi");
-        $.each(data.DATAS, function(key, value){
-          key = key.replace("[.", "[");
-          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
-          $('#selectExpressionField').append(option);
-        })
-      }
-    }
-
-    $('#selectExpressionField').append(emptyOption);
-    $('#selectExpressionField').selectpicker('val', "");
-    $('#selectExpressionField').selectpicker('refresh');
-
-    },
-    error: function(data) {
-      console.log(data);
+    if(obj._id == selectedQs){
+      qs = obj;
     }
   });
+
+  $.each(qs.fields, function(i, field){
+    var option = '<option class="fontsize" value="' + field.field_name + '" data-subtext="' + selectedQsText + '">' + field.field_name + '</option>';
+    $('#selectExpressionField').append(option);
+  });
+
+  $('#selectExpressionField').selectpicker('refresh');
+
+
+  // var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
+  // console.log(parms);
+
+  // $.ajax({
+  //   type: 'POST',
+  //   url: "GetFieldsFullPath",
+  //   dataType: 'json',
+  //   data: JSON.stringify(parms),
+  //   success: function(data) {
+  //   console.log(data);
+  //   var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+  //   if(data.DATAS != null && data.DATAS){
+  //     if(Object.keys(data.DATAS).length > 0){
+  //       // var exp = "\\[\\."
+  //       // var regex = new RegExp(exp, "gi");
+  //       $.each(data.DATAS, function(key, value){
+  //         key = key.replace("[.", "[");
+  //         var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
+  //         $('#selectExpressionField').append(option);
+  //       })
+  //     }
+  //   }
+
+  //   $('#selectExpressionField').append(emptyOption);
+  //   $('#selectExpressionField').selectpicker('val', "");
+  //   $('#selectExpressionField').selectpicker('refresh');
+
+  //   },
+  //   error: function(data) {
+  //     console.log(data);
+  //   }
+  // });
 
 
 });
@@ -1607,46 +1619,60 @@ $('#selectFilterQS').on('changed.bs.select', function (e, clickedIndex, isSelect
 
   var qss = {};
   var selectedQs = $(this).find("option:selected").val();
+  var selectedQsText = $(this).find("option:selected").text();
   console.log(selectedQs);
+  var qs;
+
+  if(selectedQs == "*"){
+    selectedQs = selectedQS._id;
+  }
 
   $.each($datasTable.bootstrapTable("getData"), function(i, obj){
-    qss[obj._id] = obj;
-  });
-
-  var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
-  console.log(parms);
-
-  $.ajax({
-    type: 'POST',
-    url: "GetFieldsFullPath",
-    dataType: 'json',
-    data: JSON.stringify(parms),
-    success: function(data) {
-    console.log(data);
-    var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
-
-    if(data.DATAS != null && data.DATAS){
-      if(Object.keys(data.DATAS).length > 0){
-        // var exp = "\\[\\."
-        // var regex = new RegExp(exp, "gi");
-        $.each(data.DATAS, function(key, value){
-          key = key.replace("[.", "[");
-          var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
-          $('#selectFilterField').append(option);
-        })
-      }
-    }
-
-    $('#selectFilterField').append(emptyOption);
-    $('#selectFilterField').selectpicker('val', "");
-    $('#selectFilterField').selectpicker('refresh');
-
-    },
-    error: function(data) {
-      console.log(data);
+    if(obj._id == selectedQs){
+      qs = obj;
     }
   });
 
+  $.each(qs.fields, function(i, field){
+    var option = '<option class="fontsize" value="' + field.field_name + '" data-subtext="' + selectedQsText + '">' + field.field_name + '</option>';
+    $('#selectFilterField').append(option);
+  });
+
+  $('#selectFilterField').selectpicker('refresh');
+
+  // var parms = {qss: JSON.stringify(qss), selectedQs: selectedQs};
+  // console.log(parms);
+
+  // $.ajax({
+  //   type: 'POST',
+  //   url: "GetFieldsFullPath",
+  //   dataType: 'json',
+  //   data: JSON.stringify(parms),
+  //   success: function(data) {
+  //   console.log(data);
+  //   var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+
+  //   if(data.DATAS != null && data.DATAS){
+  //     if(Object.keys(data.DATAS).length > 0){
+  //       // var exp = "\\[\\."
+  //       // var regex = new RegExp(exp, "gi");
+  //       $.each(data.DATAS, function(key, value){
+  //         key = key.replace("[.", "[");
+  //         var option = '<option class="fontsize" value="' + value + '" data-subtext="' + key + '">' + value + '</option>';
+  //         $('#selectFilterField').append(option);
+  //       })
+  //     }
+  //   }
+
+  //   $('#selectFilterField').append(emptyOption);
+  //   $('#selectFilterField').selectpicker('val', "");
+  //   $('#selectFilterField').selectpicker('refresh');
+
+  //   },
+  //   error: function(data) {
+  //     console.log(data);
+  //   }
+  // });
 
 });
 
@@ -1674,6 +1700,9 @@ function loadSelectFilterQS(){
     success: function(data) {
     console.log(data);
     var emptyOption = '<option class="fontsize" value="" data-subtext="' + '' + '"></option>';
+    var allOption = '<option class="fontsize" value="' + "*" + '" data-subtext="All">' + "*" + '</option>';
+    $('#selectFilterQS').append(emptyOption);
+    $('#selectFilterQS').append(allOption);
 
     if(data.DATAS != null && data.DATAS){
       if(Object.keys(data.DATAS).length > 0){
@@ -1684,7 +1713,6 @@ function loadSelectFilterQS(){
       }
     }
 
-    $('#selectFilterQS').append(emptyOption);
     $('#selectFilterQS').selectpicker('val', "");
     $('#selectFilterQS').selectpicker('refresh');
 
