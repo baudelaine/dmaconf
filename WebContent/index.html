@@ -541,8 +541,8 @@
 					<div class="modal-footer">
 						<!-- <button type="button" onclick="SaveHiddenQueries()" class="btn btn-default" data-toggle="tooltip" title="Save queries to server."><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span></button>
 						<button type="button" onclick="GetHiddenQueriesList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open queries from server."><span class="glyphicon glyphicon-open-file" aria-hidden="true"></span></button> -->
-						<button type="button" class="btn btn-primary" onclick="setHidden()"><span class="glyphicon glyphicon-ok" aria-hidden="true"></button>
-						<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></button>
+						<button type="button" class="btn btn-primary" onclick="setHidden()">Execute</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -1132,9 +1132,9 @@
 						<ul class="dropdown-menu" id="tablesMenu">
 							<li><a href="#" id="addTableAlias">Alias</a></li>
 							<li><a href="#" id="sortTables">Sort</a></li>
-							<li><a href="#" id="refreshTableDBMD">Refesh DBMD</a></li>
+							<li id="liRefreshTableDBMD"><a href="#" id="refreshTableDBMD">Refesh DBMD</a></li>
 							<li role="separator" class="divider"></li>
-							<li><a href="#" id="addSqlRel">Add SQL Relations</a></li>
+							<li id="liAddSqlRel"><a href="#" id="addSqlRel">Add SQL Relations</a></li>
 							<li><a href="#" id="addCsvRel">Add CSV Relations</a></li>
 							<li><a href="#" id="removeRel">Remove Relations</a></li>
 							<li><a href="#" id="saveRel">Save Relations</a></li>
@@ -1147,13 +1147,14 @@
 
 				<div class="input-group">
 					<div class="input-group-btn">
-						<select class="selectpicker" data-style="btn-default" id="qsSelect" data-live-search="true" title="Query Subjets..."></select>
+						<!-- <select class="selectpicker" data-style="btn-default" id="qsSelect" multiple data-actions-box="true" data-live-search="true" title="Query Subjects..."></select> -->
+						<select class="selectpicker" data-style="btn-default" id="qsSelect" data-live-search="true" title="Query Subjects..."></select>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
 						</button>
 						<input type="hidden" id="alias" value=""/>
 						<ul class="dropdown-menu" id="qsMenu">
-							<li><a href="#" id="setHidden">Set Hidden</a></li>
+							<li id="liSetHidden"><a href="#" id="setHidden">Set Hidden</a></li>
 							<li><a href="#" id="setHiddenINL">Set Hidden (if no label)</a></li>
 							<li class="disabled"><a href="#" id="unsetHidden">Unset Hidden</a></li>
 							<li><a href="#" id="removeQSLabels">Remove Labels</a></li>
@@ -1165,6 +1166,8 @@
 							<li><a href="#" id="generateViews">Generate Views</a></li>
 							<li><a href="#" id="downloadViews">Download Views</a></li>
 							<li><a href="#" id="loadViews">Load Views</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#" id="updateModel">Update Model</a></li>
 						</ul>
 					</div>
 					<input type="file" name="CSVViewsFile" id="CSVViewsFile" style="display: none;" accept=".csv">

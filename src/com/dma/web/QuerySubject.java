@@ -31,6 +31,7 @@ public class QuerySubject {
 	Map<String, String> descriptions = new HashMap<String, String>();
 	String merge = "";
 	Map<String, Filter> filters = new HashMap<String, Filter>(); 
+	String hiddenQuery = "";
 	
 	
 	public String getFolder() {
@@ -188,6 +189,12 @@ public class QuerySubject {
 	}
 	public void setFilters(Map<String, Filter> filters) {
 		this.filters = filters;
+	}
+	public String getHiddenQuery() {
+		return hiddenQuery;
+	}
+	public void setHiddenQuery(String hiddenQuery) {
+		this.hiddenQuery = hiddenQuery;
 	}
 	
 }

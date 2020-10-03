@@ -5,15 +5,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,14 +22,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "SetHidden", urlPatterns = { "/SetHidden" })
-public class SetHiddenServlet extends HttpServlet {
+@WebServlet(name = "UpdateModelFromXML", urlPatterns = { "/UpdateModelFromXML" })
+public class UpdateModelFromXMLServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SetHiddenServlet() {
+    public UpdateModelFromXMLServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -65,66 +61,71 @@ public class SetHiddenServlet extends HttpServlet {
 			result.put("PRJ", prj.toString());
 			
 			Map<String, Object> parms = Tools.fromJSON(request.getInputStream());
-			
-			if(parms != null && parms.get("qs") != null && parms.get("query") != null) {
-				
-				String json = (String) parms.get("qs");
-				QuerySubject qs = (QuerySubject) Tools.fromJSON(json, new TypeReference<QuerySubject>(){});
-				
-				Connection con = (Connection) request.getSession().getAttribute("con");
-				DatabaseMetaData metaData = con.getMetaData();
-				String schema = (String) request.getSession().getAttribute("schema");
-				String table = qs.getTable_name();
-				String query0 = (String) parms.get("query");
-				qs.setHiddenQuery(query0);
-				query0 = query0.replaceAll("\\$TABLE", table);
-				
-				ResultSet rst0 = metaData.getColumns(con.getCatalog(), schema, table, "%");
-				Statement stmt = con.createStatement();
-				Set<String> rst0Result = new HashSet<String>();
-			    
-			    while (rst0.next()) {
-			    	String colName = rst0.getString("COLUMN_NAME").toUpperCase();
-			    	String query1 = query0.replaceAll("\\$FIELD", colName);
-		    		ResultSet rst1 = null;
-		            try{
-			            rst1 = stmt.executeQuery(query1);
-		            	System.out.println(query1); 
-			            if (!rst1.next()) {    
-			                System.out.println("No data"); 
-			                rst0Result.add(colName);
-			            } 		            
-		            }
-		            catch(SQLException e){
-		            	System.out.println("CATCHING SQLEXEPTION...");
-		            	System.out.println(e.getSQLState());
-		            	System.out.println(e.getMessage());
-		            	
-		            }
-		            finally {
-			            if(rst1 != null){rst1.close();}
-					}
-			    }
 
-			    if(stmt != null) {stmt.close();}
-		        if(rst0 != null){rst0.close();}
-		        
-				for(Field field: qs.getFields()) {
-					if(rst0Result.contains(field.getField_name())) {
-						field.setHidden(true);
+			@SuppressWarnings("unchecked")
+			Map<String, QuerySubject> qss = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
+			
+			if(qss != null && parms != null) {
+
+				@SuppressWarnings("unchecked")
+				List<QuerySubject> model = (List<QuerySubject>) Tools.fromJSON((String) parms.get("model"), new TypeReference<List<QuerySubject>>(){});
+				
+				Map<String, Map<String, Object>> tMap = new HashMap<String, Map<String, Object>>();
+				
+				for(QuerySubject qs: model) {
+					String table = qs.getTable_name();
+					List<Field> fields = qs.getFields();
+					Map<String, Object> fMap = new HashMap<String, Object>();
+					for(Field field: fields) {
+						String fieldName = field.getField_name();
+						fMap.put(fieldName, null);
+					}
+					tMap.put(table, fMap);
+				}
+
+				Map<String, List<Field>> newFields = new HashMap<String, List<Field>>();
+				
+				for(Entry<String, QuerySubject> qs: qss.entrySet()) {
+					String table = qs.getKey();
+					if(tMap.containsKey(table)){
+						List<Field> fields = qs.getValue().getFields();
+						for(Field field: fields) {
+							if(!tMap.get(table).containsKey(field.getField_name())) {
+
+								if(!newFields.containsKey(table)) {
+									newFields.put(table, new ArrayList<Field>());
+								}
+								
+								Field newField = new Field();
+								newField.set_id(field.getField_name() + field.getField_type());
+								newField.setField_name(field.getField_name());
+								newField.setField_type(field.getField_type());
+								
+								newFields.get(table).add(newField);
+							}
+						}
 					}
 				}
-		        
-				result.put("DATAS", qs);
-				result.put("STATUS", "OK");
 				
+				Map<String, List<Field>> datas = new HashMap<String, List<Field>>();
+				
+				for(QuerySubject qs: model) {
+					String table = qs.getTable_name();
+					if(newFields.containsKey(table)) {
+						datas.put(qs.get_id(), newFields.get(table));
+						qs.getFields().addAll(newFields.get(table));
+					}
+				}
+				
+				result.put("MODEL", model);
+				result.put("DATAS", datas);
+				result.put("STATUS", "OK");
 			}
 			else {
 				result.put("STATUS", "KO");
 				result.put("ERROR", "Input parameters are not valid.");
 				throw new Exception();
 			}			
-			
 		}
 		
 		catch (Exception e) {

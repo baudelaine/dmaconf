@@ -4989,9 +4989,15 @@ function GetCurrentProject(){
               console.log(data);
             }
           });
-        
-        }
 
+          $("#liSetHidden").addClass('disabled');
+          $("#setHidden").unbind('click');
+          $("#liRefreshTableDBMD").addClass('disabled');
+          $("#refreshTableDBMD").unbind('click');
+          $("#liAddSqlRel").addClass('disabled');
+          $("#addSqlRel").unbind('click');
+
+        }
 
       }
       console.log(data.data);
@@ -5662,8 +5668,61 @@ $('#CSVViewsFile').change(function(){
 })
 
 $("#loadViews").click(function(){
-  console.log("loadViews was clicked");
   $('#CSVViewsFile').trigger('click');
+
+})
+
+$("#updateModel").click(function(){
+
+  if(currentProject.resource.jndiName == "XML"){
+
+    var model = $datasTable.bootstrapTable('getData');
+
+    var parms = {"model": JSON.stringify(model)};  
+
+    $.ajax({
+      type: 'POST',
+      url: "UpdateModelFromXML",
+      dataType: 'json',
+      data: JSON.stringify(parms),
+
+      success: function(data) {
+          console.log(data);
+
+          if(jQuery.isEmptyObject(data.DATAS)){
+            bootbox.alert({
+              message: "Model is already up to date.",
+              size: "small",
+              callback: function(result){
+              }
+            });          
+  
+          }
+          else{
+
+            $datasTable.bootstrapTable("load", data.MODEL);
+            var list = '<ul class="list-group">';
+            $.each(Object(data.DATAS), function(key, value){
+              list += '<li class="list-group-item">' + key + '<span class="badge">' + value.length + '</span>' + '</li>';
+            })
+            list += '</ul>';
+
+            bootbox.alert({
+              title: "Following Query Subjects have been updated successfuly :",
+              message: list,
+              callback: function(result){
+              }
+            });  
+          }        
+
+      },
+      error: function(data) {
+          console.log(data);
+      }
+
+    });
+  }
+
 
 })
 
@@ -5702,15 +5761,31 @@ $('#setHiddenINL').click(function(){
 })
 
 $("#setHidden").click(function(){
-  var table = $("#qsSelect").find("option:selected").text();
-  console.log(table);
-  if(!table == ""){
+  // var qsId = $("#qsSelect").find("option:selected").text();
+  var qsId = $("#qsSelect").val();
+  console.log(qsId);
+  if(qsId){
     $("#hiddenQueryModal").modal("toggle");
-    $("#hiddenQueryModalLabel").text("SQL queries for hidden" + " - " + table);
+    $("#hiddenQueryModalLabel").text("SQL queries for hidden" + " - " + qsId);
+    var qsId = $("#qsSelect").find("option:selected").text();
+    var qss = $datasTable.bootstrapTable('getData');
+    var qs;
+    $.each(qss, function(i, o){
+      if(o._id.match(qsId)){
+        qs = o;
+        return false;
+      }
+    })
+  
+    $("#hiddenQuery").val(qs.hiddenQuery);
+
   }
   else{
     showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
   }
+
+  console.log(currentProject);
+
 })
 
 function setHidden(){
@@ -5730,6 +5805,8 @@ function setHidden(){
 
   var parms = {"qs": JSON.stringify(qs), "query": query};
 
+  qs.hiddenQuery = query;
+
   $.ajax({
 		type: 'POST',
 		url: "SetHidden",
@@ -5737,6 +5814,7 @@ function setHidden(){
     data: JSON.stringify(parms),
 
 		success: function(data) {
+      console.log(data.DATAS);
       qss[index] = data.DATAS;
       $refTab.tab('show');
       $qsTab.tab('show');
