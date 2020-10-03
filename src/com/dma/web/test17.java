@@ -17,11 +17,10 @@ public class test17 {
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 
-		Path path = Paths.get("/home/dma/dma/cda0/models/mdl1-short.json");
-		String selectedQs = "PERSONRef";
-//		String selectedQs = "TYPRISERef";
-//		String selectedQs = "PTA_PRNRef";
-//		String selectedQs = "OGRef";
+		Path path = Paths.get("/home/dma/dma/cda2/models/mdl1-migrated.json");
+//		String selectedQs = "POFinal";
+//		String selectedQs = "POLINEFinal";
+		String selectedQs = "PERSONREF";
 		
 		
 		
@@ -54,7 +53,7 @@ public class test17 {
 				if(qs.getValue()._id.equalsIgnoreCase(selectedQs)) {
 					System.out.println("[FINAL].[" + qsFinalName + "]");
 					for(Field field: qs.getValue().getFields()){
-						System.out.println("[FINAL].[" + qsFinalName + "]." + "[" + field.getField_name() + "]");
+//						System.out.println("[FINAL].[" + qsFinalName + "]." + "[" + field.getField_name() + "]");
 					}
 				}
 				
@@ -111,7 +110,7 @@ public class test17 {
 				if((pkAlias + "Ref").equalsIgnoreCase((selectedQs))) {
 					System.out.println("[REF].[" + qsFinalName + gDirNameCurrent + "]");
 					for(Field field: qss.get(pkAlias + "Ref").getFields()){
-						System.out.println("[REF].[" + qsFinalName + "].[" + gDirNameCurrent + "." + field.getField_name() +"]");
+//						System.out.println("[REF].[" + qsFinalName + "].[" + gDirNameCurrent + "." + field.getField_name() +"]");
 						
 					}
 				}
