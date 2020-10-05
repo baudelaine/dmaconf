@@ -5674,55 +5674,51 @@ $("#loadViews").click(function(){
 
 $("#updateModel").click(function(){
 
-  if(currentProject.resource.jndiName == "XML"){
+  var model = $datasTable.bootstrapTable('getData');
 
-    var model = $datasTable.bootstrapTable('getData');
+  var parms = {"model": JSON.stringify(model)};  
 
-    var parms = {"model": JSON.stringify(model)};  
+  $.ajax({
+    type: 'POST',
+    url: "UpdateModel",
+    dataType: 'json',
+    data: JSON.stringify(parms),
 
-    $.ajax({
-      type: 'POST',
-      url: "UpdateModelFromXML",
-      dataType: 'json',
-      data: JSON.stringify(parms),
+    success: function(data) {
+        console.log(data);
 
-      success: function(data) {
-          console.log(data);
+        if(jQuery.isEmptyObject(data.DATAS)){
+          bootbox.alert({
+            message: "Model is already up to date.",
+            size: "small",
+            callback: function(result){
+            }
+          });          
 
-          if(jQuery.isEmptyObject(data.DATAS)){
-            bootbox.alert({
-              message: "Model is already up to date.",
-              size: "small",
-              callback: function(result){
-              }
-            });          
-  
-          }
-          else{
+        }
+        else{
 
-            $datasTable.bootstrapTable("load", data.MODEL);
-            var list = '<ul class="list-group">';
-            $.each(Object(data.DATAS), function(key, value){
-              list += '<li class="list-group-item">' + key + '<span class="badge">' + value.length + '</span>' + '</li>';
-            })
-            list += '</ul>';
+          $datasTable.bootstrapTable("load", data.MODEL);
+          var list = '<ul class="list-group">';
+          $.each(Object(data.DATAS), function(key, value){
+            list += '<li class="list-group-item">' + key + '<span class="badge">' + value.length + '</span>' + '</li>';
+          })
+          list += '</ul>';
 
-            bootbox.alert({
-              title: "Following Query Subjects have been updated successfuly :",
-              message: list,
-              callback: function(result){
-              }
-            });  
-          }        
+          bootbox.alert({
+            title: "Following Query Subjects have been updated successfuly :",
+            message: list,
+            callback: function(result){
+            }
+          });  
+        }        
 
-      },
-      error: function(data) {
-          console.log(data);
-      }
+    },
+    error: function(data) {
+        console.log(data);
+    }
 
-    });
-  }
-
+  });
 
 })
 

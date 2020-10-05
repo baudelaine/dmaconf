@@ -22,14 +22,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "UpdateModelFromXML", urlPatterns = { "/UpdateModelFromXML" })
-public class UpdateModelFromXMLServlet extends HttpServlet {
+@WebServlet(name = "UpdateModel", urlPatterns = { "/UpdateModel" })
+public class UpdateModelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UpdateModelFromXMLServlet() {
+    public UpdateModelServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -62,14 +62,13 @@ public class UpdateModelFromXMLServlet extends HttpServlet {
 			
 			Map<String, Object> parms = Tools.fromJSON(request.getInputStream());
 
-			@SuppressWarnings("unchecked")
-			Map<String, QuerySubject> qss = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
 			
-			if(qss != null && parms != null) {
+			if(parms != null) {
 
+				
 				@SuppressWarnings("unchecked")
 				List<QuerySubject> model = (List<QuerySubject>) Tools.fromJSON((String) parms.get("model"), new TypeReference<List<QuerySubject>>(){});
-				
+
 				Map<String, Map<String, Object>> tMap = new HashMap<String, Map<String, Object>>();
 				
 				for(QuerySubject qs: model) {
@@ -83,25 +82,37 @@ public class UpdateModelFromXMLServlet extends HttpServlet {
 					tMap.put(table, fMap);
 				}
 
+				boolean isXML = false;
+				Project project = (Project) request.getSession().getAttribute("currentProject");
+				Resource resource = project.getResource();
+				if(resource.getJndiName().equalsIgnoreCase("XML")) {
+					isXML = true;
+				}				
+
 				Map<String, List<Field>> newFields = new HashMap<String, List<Field>>();
 				
-				for(Entry<String, QuerySubject> qs: qss.entrySet()) {
-					String table = qs.getKey();
-					if(tMap.containsKey(table)){
-						List<Field> fields = qs.getValue().getFields();
-						for(Field field: fields) {
-							if(!tMap.get(table).containsKey(field.getField_name())) {
-
-								if(!newFields.containsKey(table)) {
-									newFields.put(table, new ArrayList<Field>());
+				if(isXML) {
+					@SuppressWarnings("unchecked")
+					Map<String, QuerySubject> qss = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
+					
+					for(Entry<String, QuerySubject> qs: qss.entrySet()) {
+						String table = qs.getKey();
+						if(tMap.containsKey(table)){
+							List<Field> fields = qs.getValue().getFields();
+							for(Field field: fields) {
+								if(!tMap.get(table).containsKey(field.getField_name())) {
+	
+									if(!newFields.containsKey(table)) {
+										newFields.put(table, new ArrayList<Field>());
+									}
+									
+									Field newField = new Field();
+									newField.set_id(field.getField_name() + field.getField_type());
+									newField.setField_name(field.getField_name());
+									newField.setField_type(field.getField_type());
+									
+									newFields.get(table).add(newField);
 								}
-								
-								Field newField = new Field();
-								newField.set_id(field.getField_name() + field.getField_type());
-								newField.setField_name(field.getField_name());
-								newField.setField_type(field.getField_type());
-								
-								newFields.get(table).add(newField);
 							}
 						}
 					}
