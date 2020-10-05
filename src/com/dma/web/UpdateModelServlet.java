@@ -5,6 +5,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +70,9 @@ public class UpdateModelServlet extends HttpServlet {
 
 				
 				@SuppressWarnings("unchecked")
+				List<String> langs = (List<String>) Tools.fromJSON((String) parms.get("langs"), new TypeReference<List<String>>(){});
+				
+				@SuppressWarnings("unchecked")
 				List<QuerySubject> model = (List<QuerySubject>) Tools.fromJSON((String) parms.get("model"), new TypeReference<List<QuerySubject>>(){});
 
 				Map<String, Map<String, Object>> tMap = new HashMap<String, Map<String, Object>>();
@@ -110,12 +116,65 @@ public class UpdateModelServlet extends HttpServlet {
 									newField.set_id(field.getField_name() + field.getField_type());
 									newField.setField_name(field.getField_name());
 									newField.setField_type(field.getField_type());
+									Map<String, String> langsMap = new HashMap<String, String>();
+									for(String lang: langs) {
+										langsMap.put(lang, "");
+									}
+									newField.setLabels(langsMap);
+									newField.setDescriptions(langsMap);
 									
 									newFields.get(table).add(newField);
 								}
 							}
 						}
 					}
+				}
+				else {
+
+					Connection con = (Connection) request.getSession().getAttribute("con");
+					String schema = (String) request.getSession().getAttribute("schema");
+					
+				    DatabaseMetaData metaData = con.getMetaData();
+				    String[] types = {"TABLE"};
+				    ResultSet rstTables = metaData.getTables(con.getCatalog(), schema, "%", types);					    
+
+				    while (rstTables.next()) {
+				    	String table = rstTables.getString("TABLE_NAME");
+				    	if(tMap.containsKey(table)) {
+							ResultSet rstFields = metaData.getColumns(con.getCatalog(), schema, rstTables.getString("TABLE_NAME"), "%");
+							while(rstFields.next()){
+								if(!tMap.get(table).containsKey(rstFields.getString("COLUMN_NAME"))) {								
+
+									if(!newFields.containsKey(table)) {
+										newFields.put(table, new ArrayList<Field>());
+									}
+									
+									Field newField = new Field();
+									newField.set_id(rstFields.getString("COLUMN_NAME") + rstFields.getString("TYPE_NAME"));
+									newField.setField_name(rstFields.getString("COLUMN_NAME"));
+									newField.setField_type(rstFields.getString("TYPE_NAME"));
+									newField.setNullable(rstFields.getString("IS_NULLABLE"));
+									newField.setField_size(rstFields.getInt("COLUMN_SIZE"));
+									newField.setDescription(rstFields.getString("REMARKS"));
+									Map<String, String> langsMap = new HashMap<String, String>();
+									for(String lang: langs) {
+										langsMap.put(lang, "");
+									}
+									newField.setLabels(langsMap);
+									newField.setDescriptions(langsMap);
+									
+									newFields.get(table).add(newField);
+								}
+								
+							}
+							rstFields.close();
+				    	}
+
+				    }		    
+				    
+				    rstTables.close();
+				    
+					
 				}
 				
 				Map<String, List<Field>> datas = new HashMap<String, List<Field>>();

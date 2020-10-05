@@ -5674,9 +5674,15 @@ $("#loadViews").click(function(){
 
 $("#updateModel").click(function(){
 
+  var langs = $.map($('#langSelect option'), function(el) { 
+    if($(el).val().length > 0){
+      return $(el).val();
+    }
+  });
+
   var model = $datasTable.bootstrapTable('getData');
 
-  var parms = {"model": JSON.stringify(model)};  
+  var parms = {"model": JSON.stringify(model), "langs": JSON.stringify(langs)};  
 
   $.ajax({
     type: 'POST',
