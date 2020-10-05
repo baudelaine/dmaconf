@@ -4503,9 +4503,10 @@ function Publish(){
 
   var view = views;
 
-  bootbox.prompt({
+  bootbox.dialog({
     size: "small",
-    title: "Enter project name",
+    title: "Enter model name",
+    message: '<label class="container">One<input type="checkbox" checked="checked"><span class="checkmark"></span></label>',
     callback: function(result){
        /* result = String containing user input if OK clicked or null if Cancel clicked */
       projectName = result;
