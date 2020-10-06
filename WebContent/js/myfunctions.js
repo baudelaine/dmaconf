@@ -1,4 +1,3 @@
-var datas = [];
 var tables = [];
 var modelList = [];
 var $tableList = $('#tables');
@@ -36,7 +35,6 @@ var currentProject;
 
 var countryCodes = ["ar", "be", "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "ga", "hi", "hr", "hu", "in", "is", "it", "iw", "ja", "ko", "lt", "lv", "mk", "ms", "mt", "nl", "no", "pl", "pt", "ro", "ru", "sk", "sl", "sq", "sr", "sv", "th", "tr", "uk", "vi", "zh"];
 var emptyOption = '<option class="fontsize" value="" data-subtext="" data-content=""></option>';
-var views = [];
 
 var relationCols = [];
 // relationCols.push({field:"checkbox", checkbox: "true"});
@@ -279,7 +277,9 @@ $(document)
 .ready(function() {
   // localStorage.setItem('dbmd', null);
 
-  buildTable($datasTable, qsCols, datas, true);
+  buildTable($datasTable, qsCols, [], true);
+  buildTable($('#ViewsTable'), qsCols, [], true);
+  $('#ViewsTable').hide();
   // buildComboList($('#selectDimension'));
   // GetCognosLocales();
   initLangList();
@@ -334,6 +334,7 @@ $navTab.on('show.bs.tab', function(event){
 });
 
 $qsTab.on('shown.bs.tab', function(e) {
+  var datas = $datasTable.bootstrapTable('getData');
   buildTable($datasTable, qsCols, datas, true, fieldCols, "fields");
   $datasTable.bootstrapTable("filterBy", {});
   // $datasTable.bootstrapTable('showColumn', 'checkbox');
@@ -363,40 +364,43 @@ $qsTab.on('shown.bs.tab', function(e) {
     // $("#hierInputGroup").addClass('show');
   // $("#hierInputGroup").hide().addClass('show');
 
+  $datasTable.show();
+  $('#ViewsTable').hide();
 });
 
-$viewTab.on('hide.bs.tab', function(e) {
-  views = $('#DatasTable').bootstrapTable('getData');
-	$('#DatasTable').bootstrapTable('load', datas);
-})
+// $viewTab.on('hide.bs.tab', function(e) {
+//   views = $('#DatasTable').bootstrapTable('getData');
+// 	$('#DatasTable').bootstrapTable('load', datas);
+// })
 
 $viewTab.on('shown.bs.tab', function(e) {
+  var views = $('#ViewsTable').bootstrapTable('getData');
   console.log(views);
-  datas = $('#DatasTable').bootstrapTable('getData');
-	$('#DatasTable').bootstrapTable('load', views);
-  buildTable($datasTable, qsCols, views, true, fieldCols, "fields");
-  $datasTable.bootstrapTable("filterBy", {});
-  // $datasTable.bootstrapTable('showColumn', 'checkbox');
-  $datasTable.bootstrapTable('hideColumn', 'visible');
-  $datasTable.bootstrapTable('hideColumn', 'filter');
-  $datasTable.bootstrapTable('hideColumn', 'secFilter');
-  $datasTable.bootstrapTable('showColumn', 'label');
-  $datasTable.bootstrapTable('hideColumn', 'operate');
-  $datasTable.bootstrapTable('hideColumn', 'addRelation');
-  $datasTable.bootstrapTable('hideColumn', 'addPKRelation');
-  $datasTable.bootstrapTable('showColumn', 'addField');
-  $datasTable.bootstrapTable('hideColumn', 'merge');
-  // $datasTable.bootstrapTable('hideColumn', 'table_alias');
-  // $datasTable.bootstrapTable('showColumn', 'addFolder');
-  // $datasTable.bootstrapTable('showColumn', 'addDimensionName');
-  $datasTable.bootstrapTable('hideColumn', 'recurseCount');
-  $datasTable.bootstrapTable('hideColumn', '_id');
-  $datasTable.bootstrapTable('hideColumn', 'above');
-  $datasTable.bootstrapTable('hideColumn', 'folder');
-  $datasTable.bootstrapTable('hideColumn', 'linker');
-  $datasTable.bootstrapTable('hideColumn', 'linker_ids');
-  $datasTable.bootstrapTable('hideColumn', 'remove');
-  $datasTable.bootstrapTable('hideColumn', 'recCount');
+  // datas = $('#DatasTable').bootstrapTable('getData');
+	// $('#ViewsTable').bootstrapTable('load', views);
+  buildTable($('#ViewsTable'), qsCols, views, true, fieldCols, "fields");
+  $('#ViewsTable').bootstrapTable("filterBy", {});
+  // $('#ViewsTable').bootstrapTable('showColumn', 'checkbox');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'visible');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'filter');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'secFilter');
+  $('#ViewsTable').bootstrapTable('showColumn', 'label');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'operate');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'addRelation');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'addPKRelation');
+  $('#ViewsTable').bootstrapTable('showColumn', 'addField');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'merge');
+  // $('#ViewsTable').bootstrapTable('hideColumn', 'table_alias');
+  // $('#ViewsTable').bootstrapTable('showColumn', 'addFolder');
+  // $('#ViewsTable').bootstrapTable('showColumn', 'addDimensionName');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'recurseCount');
+  $('#ViewsTable').bootstrapTable('hideColumn', '_id');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'above');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'folder');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'linker');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'linker_ids');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'remove');
+  $('#ViewsTable').bootstrapTable('hideColumn', 'recCount');
 
   // $("#foldInputGroup").hide().addClass('hidden');
   // $("#foldInputGroup").hide().addClass('show');
@@ -404,10 +408,13 @@ $viewTab.on('shown.bs.tab', function(e) {
   // $("#dimInputGroup").hide().addClass('show');
     // $("#hierInputGroup").addClass('show');
   // $("#hierInputGroup").hide().addClass('show');
+  $datasTable.hide();
+  $('#ViewsTable').show();
 
 });
 
 $finTab.on('shown.bs.tab', function(e) {
+  var datas = $datasTable.bootstrapTable('getData');
   buildTable($datasTable, qsCols, datas, true, relationCols, "relations");
   $datasTable.bootstrapTable("filterBy", {});
   $datasTable.bootstrapTable("filterBy", {type: ['Final']});
@@ -433,9 +440,13 @@ $finTab.on('shown.bs.tab', function(e) {
   $datasTable.bootstrapTable('hideColumn', 'above');
   $datasTable.bootstrapTable('hideColumn', 'folder');
   $datasTable.bootstrapTable('showColumn', 'remove');
+  $datasTable.show();
+  $('#ViewsTable').hide();
+
 });
 
 $refTab.on('shown.bs.tab', function(e) {
+  var datas = $datasTable.bootstrapTable('getData');
   buildTable($datasTable, qsCols, datas, true, relationCols, "relations");
   $datasTable.bootstrapTable("filterBy", {});
   // $datasTable.bootstrapTable("filterBy", {type: ['Final', 'Ref']});
@@ -461,9 +472,13 @@ $refTab.on('shown.bs.tab', function(e) {
   $datasTable.bootstrapTable('hideColumn', 'linker_ids');
   $datasTable.bootstrapTable('hideColumn', 'folder');
   $datasTable.bootstrapTable('hideColumn', 'remove');
+  $datasTable.show();
+  $('#ViewsTable').hide();
+
 });
 
 $secTab.on('shown.bs.tab', function(e) {
+  var datas = $datasTable.bootstrapTable('getData');
   buildTable($datasTable, qsCols, datas, true, relationCols, "relations");
   $datasTable.bootstrapTable("filterBy", {});
   $datasTable.bootstrapTable("filterBy", {type: ['Final', 'Ref', 'Sec']});
@@ -487,10 +502,14 @@ $secTab.on('shown.bs.tab', function(e) {
   $datasTable.bootstrapTable('hideColumn', 'folder');
   $datasTable.bootstrapTable('hideColumn', 'linker');
   $datasTable.bootstrapTable('hideColumn', 'linker_ids');
+  $datasTable.show();
+  $('#ViewsTable').hide();
+
 
 });
 
 $traTab.on('shown.bs.tab', function(e) {
+  var datas = $datasTable.bootstrapTable('getData');
   buildTable($datasTable, qsCols, datas, true, relationCols, "relations");
   $datasTable.bootstrapTable("filterBy", {});
   $datasTable.bootstrapTable("filterBy", {type: ['Final', 'Ref', 'Tra']});
@@ -505,6 +524,9 @@ $traTab.on('shown.bs.tab', function(e) {
   $datasTable.bootstrapTable('showColumn', 'nommageRep');
   $datasTable.bootstrapTable('showColumn', 'above');
   $datasTable.bootstrapTable('hideColumn', 'merge');
+  $datasTable.show();
+  $('#ViewsTable').hide();
+
 });
 
 
@@ -4023,10 +4045,10 @@ function GetQuerySubjects(table_name, table_alias, type, linker_id, index) {
         var newQS = [];
         newQS.push(data.DATAS);
     		$datasTable.bootstrapTable('append', newQS);
-        datas = $datasTable.bootstrapTable("getData");
+        var datas = $datasTable.bootstrapTable("getData");
         $datasTable.bootstrapTable('expandRow', index);
 
-        console.log(datas);
+        // console.log(datas);
 
         $("#qsSelect").empty();
         $.each(datas, function(i, data){
@@ -4501,7 +4523,7 @@ function Publish(){
     $qsTab.tab('show');
   }
 
-  var view = views;
+  var view = $('#ViewsTable').bootstrapTable("getData");
 
   bootbox.dialog({
     size: "small",
@@ -4553,8 +4575,10 @@ function ViewsGeneratorFromMerge(){
 
   $datasTable.bootstrapTable("filterBy", {});
   var data = $datasTable.bootstrapTable('getData');
+
+  var views = $('#ViewsTable').bootstrapTable("getData");
   
-  var parms = {data: JSON.stringify(data)};
+  var parms = {"qss": JSON.stringify(data), "views": JSON.stringify(views)};
   console.log(parms);
 
   $.ajax({
@@ -4564,12 +4588,9 @@ function ViewsGeneratorFromMerge(){
     data: JSON.stringify(parms),
 
     success: function(data) {
-      // $('#DatasTable').bootstrapTable('load', data);
-      console.log(data);
       if(data.STATUS == "OK"){
         showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
-        console.log(Object.values(data.DATAS));
-        views = Object.values(data.DATAS);
+        $('#ViewsTable').bootstrapTable("load", Object.values(data.DATAS));
       }
       else{
         showalert(data.ERROR, data.MESSAGE, "alert-danger");
@@ -4597,7 +4618,7 @@ function SaveModel(){
   $datasTable.bootstrapTable("filterBy", {});
   var modelName;
   var data = $datasTable.bootstrapTable('getData');
-  var view = views;
+  var view = $('#ViewsTable').bootstrapTable("getData");
 
   if (data.length == 0) {
     showalert("SaveModel()", "Nothing to save.", "alert-warning", "bottom");
@@ -4759,7 +4780,8 @@ function OpenModel(id){
       if(data.views){
         $("#viewTab").removeClass('disabled');
         $viewTab.prop('disabled',false);
-        views = data.views;
+        // views = data.views;
+        $("#ViewsTable").bootstrapTable("load", data.views);
       }
       $refTab.tab('show');
       initGlobals();
@@ -5648,8 +5670,8 @@ $('#CSVViewsFile').change(function(){
       console.log(data);
       if(data.STATUS == "OK"){
         showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
-        console.log(Object.values(data.DATAS));
-        views = Object.values(data.DATAS);
+        // console.log(Object.values(data.DATAS));
+        $('#ViewsTable').bootstrapTable("load", Object.values(data.DATAS));
         $("#viewTab").removeClass('disabled');
         $viewTab.prop('disabled',false);
       
@@ -5762,6 +5784,22 @@ $('#setHiddenINL').click(function(){
     showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
   }
 })
+
+function saveHiddenQuery(){
+
+  var qsId = $("#qsSelect").val();
+  var query = $("#hiddenQuery").val().toUpperCase();
+  var qss = $datasTable.bootstrapTable('getData');
+
+  $.each(qss, function(i, o){
+    if(o._id.match(qsId)){
+      o.hiddenQuery = query;
+      ShowAlert("hiddenQuery saved.", "alert-success", $("#hiddenQueryModalAlert"));
+      return false;
+    }
+  })
+
+}
 
 $("#setHidden").click(function(){
   // var qsId = $("#qsSelect").find("option:selected").text();
@@ -6964,18 +7002,9 @@ saveRel.addEventListener('click', function(event){
 
 downloadViews.addEventListener('click', function(event){
 
-  var vues = [];
+  var vues = $('#ViewsTable').bootstrapTable("getData");
 
-  if(activeTab.match("Views")){
-    vues = $datasTable.bootstrapTable('getData');
-  }
-  else{
-    vues = views;
-  }
-
-  console.log(views.length);
-
-  if(views.length == 0){
+  if(vues.length == 0){
     showalert("Nothing to do", "No view found.", "alert-info", "bottom");
     return;
   }

@@ -72,20 +72,35 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 			
 			if(parms != null) {
 				
-				String data = (String) parms.get("data");
+				String qss = (String) parms.get("qss");
 				List<QuerySubject> qsList = new ArrayList<QuerySubject>();
 				
 				try {
 					ObjectMapper mapper = new ObjectMapper();
 			        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			        qsList = Arrays.asList(mapper.readValue(data, QuerySubject[].class));
+			        qsList = Arrays.asList(mapper.readValue(qss, QuerySubject[].class));
 				}
 				catch (Exception e) {
 					result.put("STATUS", "KO");
-					result.put("ERROR", "data input parameter is not a valid QuerySubject list.");
+					result.put("ERROR", "qss input parameter is not a valid QuerySubject list.");
 					throw new Exception();
 				}
-		        
+
+				String views = (String) parms.get("views");
+				List<QuerySubject> viewsList = new ArrayList<QuerySubject>();
+				
+				try {
+					ObjectMapper mapper = new ObjectMapper();
+			        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			        viewsList = Arrays.asList(mapper.readValue(views, QuerySubject[].class));
+				}
+				catch (Exception e) {
+					result.put("STATUS", "KO");
+					result.put("ERROR", "views input parameter is not a valid QuerySubject list.");
+					throw new Exception();
+				}
+				
+				
 		        query_subjects = new HashMap<String, QuerySubject>();
 		        Map<String, Integer> recurseCount = new HashMap<String, Integer>();
 		        
@@ -199,7 +214,7 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 
 				/* Ta sortie */
 				result.put("DATAS", query_subjects_views);
-				result.put("MESSAGE", "Views generatde successfully");
+				result.put("MESSAGE", "Views generated successfully");
 				result.put("STATUS", "OK");
 			}
 			else {
