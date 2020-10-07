@@ -4780,7 +4780,6 @@ function OpenModel(id){
       if(data.views){
         $("#viewTab").removeClass('disabled');
         $viewTab.prop('disabled',false);
-        // views = data.views;
         $("#ViewsTable").bootstrapTable("load", data.views);
       }
       $refTab.tab('show');
@@ -5694,6 +5693,12 @@ $("#loadViews").click(function(){
   $('#CSVViewsFile').trigger('click');
 
 })
+
+$("#ulActionLog").click(function(){
+  $('#actionLogFile').trigger('click');
+
+})
+
 
 $("#updateModel").click(function(){
 

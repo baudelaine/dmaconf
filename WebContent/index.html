@@ -20,24 +20,23 @@
 
 	<div class="container-fluid" style="margin-top: 10px;">
 
-		<!-- navbar -->
 
 		<nav class="navbar navbar-default">
 		  <div class="container-fluid">
 
 		    <div class="navbar-header">
-		      <a class="navbar-brand" href="#">
-		        <img alt="Brand" class="img-responsive" src="img/cognos-analytics.jpg">
-						<!-- <span class="label label-primary">Consult less, report more...</span> -->
+				<a class="navbar-brand" href="https://data-accelerator.com/" target="_blank">
+		        <img alt="data-accelerator.com" src="img/logo.png" height="35" style="vertical-align:bottom;margin:-15px 0px">
 		      </a>
-				</div>
+			  <h6><span class="label label-primary">YOUR DATA YOUR WAY...</span></h6>
+			</div>
 
-				<form class="navbar-form navbar-left">
-					<h3><strong>Data Modeling Accelarator</strong></h3>
+				<ul class="navbar-form navbar-left" style="vertical-align:bottom;margin:-15px 20px">
+			  <h1><span class="label label-primary" >Data Modeler Accelerator (DMA)</span></h1>
 
-				</form>
+				</ul>
 
-				<form class="navbar-form navbar-right">
+				<ul class="navbar-form navbar-right">
 
 							<div id="alert_placeholder"></div>
 
@@ -56,9 +55,33 @@
 
 						<button type="button" onclick="TestDBConnection()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Test connection to server database."><span class="glyphicon glyphicon-signal aria-hidden="true"></span></button>
 						<!-- <button type="button" onclick="RemoveAll()" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Remove all."><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> -->
+
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+						</button>
+						<ul class="dropdown-menu" id="mainMenu">
+							<li><a href="#" id="ulActionLog">Upload Action Log</a></li>
+							<li><a href="#" id="dlActionLog">Download Action Log</a></li>
+							<li role="separator" class="divider"></li>
+							<li class="disabled"><a href="#" id="labelFold">disabled item</a></li>
+						</ul>
+						<input type="file" name="actionLogFile" id="actionLogFile" style="display: none;" accept=".xml">
+
+						<!-- <li class="dropdown">
+							<a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span><span class="caret"></span></a>
+							<ul class="dropdown-menu">
+							  <li><a href="#">Action</a></li>
+							  <li><a href="#">Another action</a></li>
+							  <li><a href="#">Something else here</a></li>
+							  <li role="separator" class="divider"></li>
+							  <li><a href="#">Separated link</a></li>
+							</ul>
+						  </li> -->
+		
+
 						<button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Release server session" onClick="Logout()"><span class="glyphicon glyphicon-off aria-hidden="true"></span></button>
 					</div>
-				</form>
+				</ul>
 
 		  </div>
 		</nav>

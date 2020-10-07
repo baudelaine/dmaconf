@@ -110,7 +110,7 @@ function GetUserInfos() {
     dataType: 'json',
     success: function(data) {
       // var user = 'Welcome <span class="label label-primary">' + data.USER + '</span>, choose something to do...';
-      var user = 'Welcome ' + data.USER + ', choose something to do...';
+      var user = 'Welcome <span class="label label-default">' + data.USER + '</span>, choose something to do...';
       $('#welcome').append(user);
       if(!data.PROJECTS){
         $("a#open").addClass('disabled');
