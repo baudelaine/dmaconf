@@ -3450,13 +3450,13 @@ function RemoveKeys(row, qs){
     title: "Following Query Subject will be dropped: ",
     message: list,
     buttons: {
-      cancel: {
-          label: '<span class="glyphicon glyphicon-remove aria-hidden="true">',
-          className: 'btn btn-default'
-      },
       confirm: {
-          label: '<span class="glyphicon glyphicon-ok aria-hidden="true">',
-          className: 'btn btn-primary'
+        label: 'Drop',
+        className: 'btn btn-primary'
+    },
+    cancel: {
+          label: 'Cancel',
+          className: 'btn btn-default'
       }
     },
     callback: function(result){
@@ -5639,6 +5639,55 @@ $("#loadFromXML").click(function(){
   $('#XMLFile').trigger('click');
 
 })
+
+$("#actionLogFile").change(function(){
+  var fd = new FormData();
+
+  var lang = $("#langSelect").find("option:selected").val();
+  var parms = {};
+  parms.lang = lang;
+  console.log(parms);
+
+  fd.append('json', JSON.stringify(parms));
+
+  var file = $(this)[0].files[0];
+  console.log(file);
+
+  fd.append('file', file, 'actionLog.xml');
+  console.log(fd);
+
+  $.ajax({
+    url: "LoadViews",
+    type: "POST",
+    data: fd,
+    enctype: 'multipart/form-data',
+    // dataType: 'application/text',
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,   // tell jQuery not to set contentType
+    success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+        // console.log(Object.values(data.DATAS));
+        $('#ViewsTable').bootstrapTable("load", Object.values(data.DATAS));
+        $("#viewTab").removeClass('disabled');
+        $viewTab.prop('disabled',false);
+      
+      }
+      else{
+        showalert(data.ERROR, data.MESSAGE, "alert-danger");
+      }
+
+		},
+		error: function(data) {
+      console.log(data);
+		}
+  });
+
+  $(this).val('');  
+
+})
+
 
 $('#CSVViewsFile').change(function(){
 
