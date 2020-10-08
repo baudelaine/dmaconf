@@ -5640,24 +5640,104 @@ $("#loadFromXML").click(function(){
 
 })
 
+$("#dlActionLog").click(function(){
+  $.ajax({
+		type: 'POST',
+		url: "ZipActionLog",
+		dataType: 'json',
+		success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success");
+        window.location.href = "DownloadActionLog";
+
+      }
+      else{
+        showalert(data.FROM, data.ERROR, "alert-warning");
+      }
+		},
+		error: function(data) {
+      console.log(data);
+      showalert("ERROR", "Unknown", "alert-danger");
+		}
+	});
+  
+})
+
+$("#rmActionLog").click(function(){
+
+  $.ajax({
+		type: 'POST',
+		url: "RemoveActionLog",
+		dataType: 'json',
+		success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success");
+      }
+      else{
+        showalert(data.FROM, data.ERROR, "alert-danger");
+      }
+		},
+		error: function(data) {
+      console.log(data);
+      showalert("ERROR", "Unknown", "alert-danger");
+		}
+	});
+  
+})
+
+$("#showActionLog").click(function(){
+  GetActionLogList()
+})
+
+function GetActionLogList(){
+
+  $.ajax({
+		type: 'POST',
+		url: "GetActionLogList",
+		dataType: 'json',
+		success: function(data) {
+      console.log(data);
+      if(data.DATAS){
+        var list = '<ul class="list-group">';
+        $.each(Object(data.DATAS), function(key, value){
+          list += '<li class="list-group-item">' + key + '</li>';
+        })
+        list += '</ul>';
+
+        bootbox.alert({
+          title: "Following Action Log(s) are already uploaded :",
+          message: list,
+          callback: function(result){
+          }
+        });  
+
+
+      }
+      else{
+        showalert(data.FROM, data.INFO, "alert-info");
+      }
+		},
+		error: function(data) {
+      console.log(data);
+		}
+	});
+
+}
+
 $("#actionLogFile").change(function(){
   var fd = new FormData();
 
-  var lang = $("#langSelect").find("option:selected").val();
-  var parms = {};
-  parms.lang = lang;
-  console.log(parms);
-
-  fd.append('json', JSON.stringify(parms));
-
   var file = $(this)[0].files[0];
-  console.log(file);
+  // console.log(file);
+  // var fileName = file.name;
 
-  fd.append('file', file, 'actionLog.xml');
-  console.log(fd);
+  fd.append('file', file, file.name);
+  // console.log(fd);
 
   $.ajax({
-    url: "LoadViews",
+    url: "UploadActionLog",
     type: "POST",
     data: fd,
     enctype: 'multipart/form-data',
@@ -5667,20 +5747,16 @@ $("#actionLogFile").change(function(){
     success: function(data) {
       console.log(data);
       if(data.STATUS == "OK"){
-        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
-        // console.log(Object.values(data.DATAS));
-        $('#ViewsTable').bootstrapTable("load", Object.values(data.DATAS));
-        $("#viewTab").removeClass('disabled');
-        $viewTab.prop('disabled',false);
-      
+        showalert(data.FROM, data.FILENAME + " uploaded successfully.", "alert-success", "bottom");
       }
       else{
-        showalert(data.ERROR, data.MESSAGE, "alert-danger");
+        showalert(data.FROM, data.ERROR + "<br>" + data.TROUBLESHOOTING, "alert-warning");
       }
 
 		},
 		error: function(data) {
       console.log(data);
+      showalert("ERROR", "Unknown", "alert-danger");
 		}
   });
 

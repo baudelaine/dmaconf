@@ -9,9 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,17 +27,19 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "Skel", urlPatterns = { "/Skel" })
-public class SkelServlet extends HttpServlet {
+@WebServlet(name = "UploadActionLog", urlPatterns = { "/UploadActionLog" })
+public class UploadActionLogServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SkelServlet() {
+    public UploadActionLogServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -41,6 +47,7 @@ public class SkelServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
@@ -83,12 +90,41 @@ public class SkelServlet extends HttpServlet {
 //					    }
 //						result.put("READING", "OK");
 					    //Or write file in project
-						Path file = Paths.get(prj + "/" + item.getName());
-						Files.copy(new BufferedInputStream(item.getInputStream()), file, StandardCopyOption.REPLACE_EXISTING);
-						file.toFile().setReadable(true, false);
-						file.toFile().setWritable(true, false);
-						result.put("WRITING", item.getName());
-					    
+						
+						Path dir = Paths.get(prj + "/actionLogs");
+						if(!Files.exists(dir)) {
+							Files.createDirectory(dir);
+							dir.toFile().setReadable(true, false);
+							dir.toFile().setWritable(true, false);
+							dir.toFile().setExecutable(true, false);
+							
+						}
+						
+						Path file = Paths.get(prj + "/actionLogs.json");
+						Map<String, Object> actionLogMap = new HashMap<String, Object>();
+						if(Files.exists(file)) {
+							actionLogMap =  (Map<String, Object>) Tools.fromJSON(file.toFile(), new TypeReference<Map<String, Object>>(){});
+						}
+						
+						if(actionLogMap.containsKey(item.getName())) {
+							result.put("STATUS", "KO");
+							result.put("ERROR", "ActionLog " + item.getName() + " already exists.");
+							result.put("TROUBLESHOOTING", "Choose another file or rename it.");
+							throw new Exception();
+						}
+						else {
+							actionLogMap.put(item.getName(), null);
+							Files.write(file, Tools.toJSON(actionLogMap).getBytes());
+							file.toFile().setReadable(true, false);
+							file.toFile().setWritable(true, false);
+	
+							file = Paths.get(dir + "/" + item.getName());
+							Files.copy(new BufferedInputStream(item.getInputStream()), file, StandardCopyOption.REPLACE_EXISTING);
+							file.toFile().setReadable(true, false);
+							file.toFile().setWritable(true, false);
+							result.put("FILENAME", item.getName());
+						}
+						
 					}
 					else {
 						//Item is field (and not a file)
@@ -112,7 +148,7 @@ public class SkelServlet extends HttpServlet {
 				}
 				else {
 					result.put("STATUS", "KO");
-					result.put("ERROR", "Input parameters are not valid.");
+					result.put("MESSAGE", "Input parameters are not valid.");
 					result.put("TROUBLESHOOTING", "Blablabla...");
 					throw new Exception();
 				}			
