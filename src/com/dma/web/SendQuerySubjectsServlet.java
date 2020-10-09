@@ -251,27 +251,26 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			// END SETUP COGNOS ENVIRONMENT
 
 			// START ACTION LOGS WITHDRAWING	
-			
-			Path prjPath = Paths.get((String) request.getSession().getAttribute("projectPath"));
-			result.put("PRJ", prjPath.toString());
 
-			File alDir = new File(prjPath + "/actionLogs");
-
-			Path alList = Paths.get(prjPath + "/actionLogs.json");
-			
 			List<String> actionLogList = new ArrayList<String>();
 			
-			if(Files.exists(alList)) {			
-				Map<String, Object> actionLogMap =  (Map<String, Object>) Tools.fromJSON(alList.toFile(), new TypeReference<Map<String, Object>>(){});
-				for(Entry<String, Object> al: actionLogMap.entrySet()) {
-					Path alPath = Paths.get(alDir + "/" + al.getKey());
-					if(Files.exists(alPath)) {
-						List<String> lines = Files.readAllLines(alPath);
-						actionLogList.add(String.join("", lines));
+			if(applyActionLogs) {
+				Path prjPath = Paths.get((String) request.getSession().getAttribute("projectPath"));
+				result.put("PRJ", prjPath.toString());
+				File alDir = new File(prjPath + "/actionLogs");
+				Path alList = Paths.get(prjPath + "/actionLogs.json");
+				
+				if(Files.exists(alList)) {			
+					Map<String, Object> actionLogMap =  (Map<String, Object>) Tools.fromJSON(alList.toFile(), new TypeReference<Map<String, Object>>(){});
+					for(Entry<String, Object> al: actionLogMap.entrySet()) {
+						Path alPath = Paths.get(alDir + "/" + al.getKey());
+						if(Files.exists(alPath)) {
+							List<String> lines = Files.readAllLines(alPath);
+							actionLogList.add(String.join("", lines));
+						}
 					}
-				}
-			}		
-			
+				}		
+			}
 			
 			// END ACTION LOGS WITHDRAWING	
 			
