@@ -256,7 +256,6 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			
 			if(applyActionLogs) {
 				Path prjPath = Paths.get((String) request.getSession().getAttribute("projectPath"));
-				result.put("PRJ", prjPath.toString());
 				File alDir = new File(prjPath + "/actionLogs");
 				Path alList = Paths.get(prjPath + "/actionLogs.json");
 				
