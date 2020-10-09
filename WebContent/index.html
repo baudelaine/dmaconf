@@ -19,80 +19,27 @@
 	<link href="css/languages.min.css" type="text/css" rel="stylesheet">
 	<link href="css/mycss.css" type="text/css" rel="stylesheet" />
 
+	<!--
+	<a class="navbar-brand" href="https://data-accelerator.com/" target="_blank">
+		<img alt="data-accelerator.com" src="img/cropped-logo-rond-192x192.png" height="35" style="vertical-align:bottom;margin:-15px 0px">
+	</a>
+
+	<h6><span class="label label-primary">YOUR DATA YOUR WAY...</span></h6>
+
+	<ul class="navbar-form navbar-left" style="vertical-align:bottom;margin:-15px 20px">
+		<h3><span class="label label-primary" >Data Modeler Accelerator (DMA)</span></h3>
+	</ul>
+	-->
+
 </head>
 <body>
 
 	<div class="container-fluid" style="margin-top: 10px;">
 
-		<nav class="navbar navbar-default">
-		  <div class="container-fluid">
+		<div id="alert_placeholder"></div>
+		<div id="divLoading"></div>
+		<div id="Alert"></div>
 
-		    <div class="navbar-header">
-				<a class="navbar-brand" href="https://data-accelerator.com/" target="_blank">
-		        <img alt="data-accelerator.com" src="img/logo.png" height="35" style="vertical-align:bottom;margin:-15px 0px">
-		      </a>
-			  <h6><span class="label label-primary">YOUR DATA YOUR WAY...</span></h6>
-			</div>
-
-				<ul class="navbar-form navbar-left" style="vertical-align:bottom;margin:-15px 20px">
-			  <h3><span class="label label-primary" >Data Modeler Accelerator (DMA)</span></h3>
-
-				</ul>
-
-				<ul class="navbar-form navbar-right">
-
-							<div id="alert_placeholder"></div>
-
-							<div id="divLoading"></div>
-							<div id="Alert"></div>
-				<!-- </form> -->
-
-
-				<!-- <form class="navbar-form navbar-right"> -->
-					<div class="well well-sm">
-
-						<button type="button" onclick="Test0()" class="hidden btn btn-default" data-toggle="tooltip" data-placement="top" title="Search.">Test</button>
-						<button type="button" onclick="Search()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Search."><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-						<button type="button" onclick="promptPublish()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Publish model."><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
-						<button type="button" onclick="SaveModel()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Save model to server."><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span></button>
-						<button type="button" onclick="GetModelList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open model from server."><span class="glyphicon glyphicon-open-file" aria-hidden="true"></span></button>
-
-						<button type="button" onclick="TestDBConnection()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Test connection to server database."><span class="glyphicon glyphicon-signal aria-hidden="true"></span></button>
-						<!-- <button type="button" onclick="RemoveAll()" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Remove all."><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button> -->
-
-					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
-						</button>
-						<ul class="dropdown-menu" id="mainMenu">
-							<li><a href="#" id="ulActionLog">Upload Action Log</a></li>
-							<li><a href="#" id="showActionLog">Show Action Log(s)</a></li>
-							<li><a href="#" id="dlActionLog">Download Action Log(s)</a></li>
-							<li><a href="#" id="rmActionLog">Remove Action Log(s)</a></li>
-							<li role="separator" class="divider"></li>
-							<li class="disabled"><a href="#" id="labelFold">disabled item</a></li>
-						</ul>
-						<input type="file" name="actionLogFile" id="actionLogFile" style="display: none;" accept=".xml">
-
-						<!-- <li class="dropdown">
-							<a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span><span class="caret"></span></a>
-							<ul class="dropdown-menu">
-							  <li><a href="#">Action</a></li>
-							  <li><a href="#">Another action</a></li>
-							  <li><a href="#">Something else here</a></li>
-							  <li role="separator" class="divider"></li>
-							  <li><a href="#">Separated link</a></li>
-							</ul>
-						  </li> -->
-		
-
-						<button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Release server session" onClick="Logout()"><span class="glyphicon glyphicon-off aria-hidden="true"></span></button>
-					</div>
-				</ul>
-
-		  </div>
-		</nav>
-
-		<!-- navbar -->
 
 		<!-- modal -->
 
@@ -503,7 +450,7 @@
 	    <div class="modal-dialog" role="document">
 	      <div class="modal-content">
 	        <div class="modal-header">
-	          <h4 class="modal-title" id="myModalLabel">Data Modeling Accelarator</h4>
+	          <h3 class="modal-title" id="myModalLabel">Data Modeler Accelarator</h3>
 	        </div>
 	        <div class="modal-body">
 
@@ -1153,6 +1100,48 @@
 
 				<div class="input-group">
 					<div class="input-group-btn">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+					</button>
+					<ul class="dropdown-menu" id="mainMenu">
+						<li><a href="#" id="addFold">Add Folder</a></li>
+						<li><a href="#" id="removeFold">Remove Folder</a></li>
+						<li class="disabled"><a href="#" id="labelFold">Label Folder</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" id="addDim">Add Dimension</a></li>
+						<li><a href="#" id="removeDim">Remove Dimension</a></li>
+						<li class="disabled"><a href="#" id="labelDim">Label Dimension</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" id="ulActionLog">Upload Action Log</a></li>
+						<li><a href="#" id="showActionLog">Show Action Log(s)</a></li>
+						<li><a href="#" id="dlActionLog">Download Action Log(s)</a></li>
+						<li><a href="#" id="rmActionLog">Remove Action Log(s)</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" id="testDBConnection">Test Database Connection</a></li>
+						<li><a href="#" id="searchTool">Search Tool</a></li>
+						<li role="separator" class="divider"></li>
+						<li class="disabled"><a href="#" id="labelFold">disabled item</a></li>
+						<li><a href="#" id="logout">Logout</a></li>
+
+					</ul>
+					<input type="file" name="actionLogFile" id="actionLogFile" style="display: none;" accept=".xml">
+
+
+					</div>
+				</div>
+
+				<div class="input-group">
+					<div class="input-group-btn">
+						<button type="button" onclick="Test0()" class="hidden btn btn-default" data-toggle="tooltip" data-placement="top" title="Search.">Test</button>
+						<button type="button" onclick="promptPublish()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Publish model."><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+						<button type="button" onclick="SaveModel()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Save model to server."><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span></button>
+						<button type="button" onclick="GetModelList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open model from server."><span class="glyphicon glyphicon-open-file" aria-hidden="true"></span></button>
+					</div>
+				</div>
+
+
+				<div class="input-group">
+					<div class="input-group-btn">
 						<select class="selectpicker" data-style="btn-default" id="tables" data-live-search="true" title="Tables..."></select>
 						<button type="button" id="magnet" onclick="GetQuerySubjects()"class="btn btn-default dropdown-toggle" data-toggle="tooltip" data-placement="top" title="Get Query Subject."><span class="glyphicon glyphicon-magnet" aria-hidden="true"></span></button>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1221,7 +1210,7 @@
 					</div>
 				</div>
 
-				<div class="input-group" id="foldInputGroup">
+				<div class="input-group hidden" id="foldInputGroup">
 					<div class="input-group-btn">
 						<select class="selectpicker" data-style="btn-default" id="foldSelect" data-live-search="true" title="Folders..."></select>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1235,7 +1224,7 @@
 					</div>
 				</div>
 
-				<div class="input-group" id="dimInputGroup">
+				<div class="input-group hidden" id="dimInputGroup">
 					<div class="input-group-btn">
 						<select class="selectpicker" data-style="btn-default" id="dimSelect" data-live-search="true" title="Dimensions..."></select>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1249,19 +1238,26 @@
 					</div>
 				</div>
 
-				<!-- <div class="input-group" id="hierInputGroup">
-					<div class="input-group-btn">
-						<select class="selectpicker" data-style="btn-default" id="hierSelect" data-live-search="true" title="Hierarchy Names..."></select>
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-						</button>
-						<ul class="dropdown-menu" id="hierMenu">
-							<li><a href="#" id="addHier">Add</a></li>
-							<li><a href="#" id="labelHier">Label</a></li>
-							<li><a href="#" id="removeHier">Remove</a></li>
-						</ul>
-					</div>
-				</div> -->
+
+				<div class="input-group pull-right">
+					<a class="navbar-brand" href="https://data-accelerator.com/" target="_blank">
+						<img alt="data-accelerator.com" src="img/logo.png" height="35" style="vertical-align:bottom;margin:-15px 0px">
+					</a>
+				</div>
+
+				<div class="input-group pull-right" style="vertical-align:bottom;margin:0px 30px">
+					<h5>
+						Powered by
+					</h5>
+				</div>
+
+				<div class="input-group pull-right" style="vertical-align:bottom;margin:-17px 0px">
+					<h3>
+						<span class="label label-primary">
+							Data Modeler Accelerator (DMA)
+						</span>
+					</h3>
+				</div>
 
 			</div>
 

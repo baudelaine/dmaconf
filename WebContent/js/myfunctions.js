@@ -4548,7 +4548,8 @@ function promptPublish(){
       '</div></form></body>'
   ].join('');
 
-  bootbox.confirm(html,function(result){
+  bootbox.confirm(html,
+    function(result){
     if(result){
       var projectName = $("#projectName").val();
       console.log(projectName);
@@ -5055,6 +5056,8 @@ function GetCurrentProject(){
           $("#refreshTableDBMD").unbind('click');
           $("#liAddSqlRel").addClass('disabled');
           $("#addSqlRel").unbind('click');
+          $("#searchTool").addClass('disabled');
+          $("#searchTool").unbind('click');
 
         }
 
@@ -5669,6 +5672,19 @@ $('#XMLFile').change(function(){
 
   $(this).val('');  
 
+})
+
+$("#logout").click(function(){
+  Logout();
+})
+
+
+$("#testDBConnection").click(function(){
+  TestDBConnection();
+})
+
+$("#searchTool").click(function(){
+  Search();
 })
 
 $("#loadFromXML").click(function(){
