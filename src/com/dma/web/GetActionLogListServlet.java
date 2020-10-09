@@ -70,7 +70,7 @@ public class GetActionLogListServlet extends HttpServlet {
 			}
 			else {
 				result.put("STATUS", "KO");
-				result.put("INFO", "No Action Log have uploaded yet.");
+				result.put("INFO", "No Action Log have been uploaded yet.");
 			}
 			
 		}

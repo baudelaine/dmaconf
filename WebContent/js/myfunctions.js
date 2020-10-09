@@ -4508,9 +4508,25 @@ function SetProjectName(){
   $projectFileModal.modal('toggle');
 }
 
-function Publish(){
+function Test(){
 
-  var projectName = "";
+  var form = $("#hiddenForm").html();
+  // var form = $(".bootbox-body #myForm").html();
+  bootbox.confirm({
+      title: "Publish Model",
+      message: form,
+      callback: function (result) {
+          // do something
+          console.log($("#fn").val());
+          var username = form.find('input[name=FirstName]').val();
+          console.log(username);          
+      }
+  });
+
+}
+
+function promptPublish(){
+
   $datasTable.bootstrapTable("filterBy", {});
 	var data = $datasTable.bootstrapTable('getData');
 
@@ -4519,53 +4535,74 @@ function Publish(){
     return;
   }
 
-  if(activeTab == "View"){
-    $qsTab.tab('show');
+  var html = [
+    '<header><h3>Publish model</h3>',
+    '<hr />',
+    '<div id="publishAlert"></div>',
+    '</header><body>',
+    '<form><div class="form-group">',
+        '<label for="projectName">Name</label>',
+        '<input type="text" class="form-control" id="projectName" placeholder="my model"></div>',
+      '<div class="checkbox">',
+        '<label><input type="checkbox" id="applyActionLogs">Apply Action Logs</label>',
+      '</div></form></body>'
+  ].join('');
+
+  bootbox.confirm(html,function(result){
+    if(result){
+      var projectName = $("#projectName").val();
+      console.log(projectName);
+      var applyActionLogs = $("#applyActionLogs").prop('checked');
+      console.log(applyActionLogs);
+      if(projectName.length == 0){
+        ShowAlert("Give the model a name.", "alert-warning", $("#publishAlert"));              
+        return false;
+      }
+      Publish(projectName, applyActionLogs);
+    }
+
+  });
+
+}
+
+function Publish(projectName, applyActionLogs){
+
+  $datasTable.bootstrapTable("filterBy", {});
+	var data = $datasTable.bootstrapTable('getData');
+
+  if (data.length == 0) {
+    showalert("Publish()", "Nothing to publish.", "alert-warning", "bottom");
+    return;
   }
 
   var view = $('#ViewsTable').bootstrapTable("getData");
 
-  bootbox.dialog({
-    size: "small",
-    title: "Enter model name",
-    message: '<label class="container">One<input type="checkbox" checked="checked"><span class="checkmark"></span></label>',
-    callback: function(result){
-       /* result = String containing user input if OK clicked or null if Cancel clicked */
-      projectName = result;
-      if(!projectName){
-        return;
+  var parms = {"projectName": projectName,
+  "applyActionLogs": applyActionLogs,
+  "data": JSON.stringify(data),
+  "view": JSON.stringify(view)
+  };
+
+  console.log(parms);
+
+  $.ajax({
+    type: 'POST',
+    url: "SendQuerySubjects",
+    dataType: 'json',
+    data: JSON.stringify(parms),
+
+    success: function(data) {
+      // $('#DatasTable').bootstrapTable('load', data);
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert("Publish()", data.MESSAGE, "alert-success", "bottom");
       }
-
-      var parms = {projectName: projectName,
-        data: JSON.stringify(data),
-        view: JSON.stringify(view)
-      };
-
-      console.log(parms);
-
-      $.ajax({
-    		type: 'POST',
-    		url: "SendQuerySubjects",
-    		dataType: 'json',
-    		data: JSON.stringify(parms),
-
-    		success: function(data) {
-    			// $('#DatasTable').bootstrapTable('load', data);
-          console.log(data);
-          if(data.STATUS == "OK"){
-            showalert("Publish()", data.MESSAGE, "alert-success", "bottom");
-          }
-          else{
-    			  showalert(data.ERROR, data.MESSAGE + ": " + data.AXISFAULT + "<br>" + data.TROUBLESHOOTING, "alert-danger");
-          }
-    		},
-    		error: function(data) {
-    			showalert("Publish()", "Publish failed.", "alert-danger", "bottom");
-    		}
-    	});
-
-      // ApplyFilter();
-
+      else{
+        showalert(data.ERROR, data.MESSAGE + ": " + data.AXISFAULT + "<br>" + data.TROUBLESHOOTING, "alert-danger");
+      }
+    },
+    error: function(data) {
+      showalert("Publish()", "Publish failed.", "alert-danger", "bottom");
     }
   });
 

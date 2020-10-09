@@ -41,6 +41,7 @@ import org.dom4j.io.SAXReader;
 
 import com.dma.svc.CognosSVC;
 import com.dma.svc.FactorySVC;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -93,6 +94,9 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			String projectName = (String) parms.get("projectName");
 			String data = (String) parms.get("data");
 			String view = (String) parms.get("view");
+//			boolean applyActionLogs = Boolean.parseBoolean((String) parms.get("applyActionLogs"));
+			boolean applyActionLogs = (boolean) parms.get("applyActionLogs");
+			System.out.println("applyActionLogs=" + applyActionLogs);
 			
 			ObjectMapper mapper = new ObjectMapper();
 	        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -246,7 +250,32 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			
 			// END SETUP COGNOS ENVIRONMENT
 
-				
+			// START ACTION LOGS WITHDRAWING	
+			
+			Path prjPath = Paths.get((String) request.getSession().getAttribute("projectPath"));
+			result.put("PRJ", prjPath.toString());
+
+			File alDir = new File(prjPath + "/actionLogs");
+
+			Path alList = Paths.get(prjPath + "/actionLogs.json");
+			
+			List<String> actionLogList = new ArrayList<String>();
+			
+			if(Files.exists(alList)) {			
+				Map<String, Object> actionLogMap =  (Map<String, Object>) Tools.fromJSON(alList.toFile(), new TypeReference<Map<String, Object>>(){});
+				for(Entry<String, Object> al: actionLogMap.entrySet()) {
+					Path alPath = Paths.get(alDir + "/" + al.getKey());
+					if(Files.exists(alPath)) {
+						List<String> lines = Files.readAllLines(alPath);
+						actionLogList.add(String.join("", lines));
+					}
+				}
+			}		
+			
+			
+			// END ACTION LOGS WITHDRAWING	
+			
+			
 	        //start();
 			String dBEngine = (String) request.getSession().getAttribute("dbEngine");
 			String cognosFolder = (String) request.getServletContext().getAttribute("cognosFolder");
