@@ -62,7 +62,9 @@ public class DownloadActionLogServlet extends HttpServlet {
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			result.put("PRJ", prj.toString());
 			
-			Path zip = Paths.get(prj + "/actionlogs.zip");
+			Path dlDir = Paths.get(prj + "/downloads");
+
+			Path zip = Paths.get(dlDir + "/actionlogs.zip");
 			
 			if(Files.exists(zip)) {
 				

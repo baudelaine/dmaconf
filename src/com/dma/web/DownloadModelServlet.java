@@ -1,6 +1,5 @@
 package com.dma.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -16,19 +16,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "RemoveActionLog", urlPatterns = { "/RemoveActionLog" })
-public class RemoveActionLogServlet extends HttpServlet {
+@WebServlet(name = "DownloadModel", urlPatterns = { "/DownloadModel" })
+public class DownloadModelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RemoveActionLogServlet() {
+    public DownloadModelServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,6 +39,7 @@ public class RemoveActionLogServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
+		Map<String, Object> parms = new HashMap<String, Object>();
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		try {
@@ -58,31 +59,50 @@ public class RemoveActionLogServlet extends HttpServlet {
 			
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			result.put("PRJ", prj.toString());
+			
+			parms = Tools.fromJSON(request.getInputStream());
+			result.put("PARMS", parms);
 
-			File dir = new File(prj + "/actionLogs");
+			if(parms != null) {
+				
+				@SuppressWarnings("unchecked")
+				List<QuerySubject> qss = (List<QuerySubject>) Tools.fromJSON(parms.get("qss").toString(), new TypeReference<List<QuerySubject>>(){});		
+				@SuppressWarnings("unchecked")
+				List<QuerySubject> views = (List<QuerySubject>) Tools.fromJSON(parms.get("view").toString(), new TypeReference<List<QuerySubject>>(){});		
+				
+				Map<String, List<QuerySubject>> model = new HashMap<String, List<QuerySubject>>();
+				
+				model.put("qss", qss);
+				model.put("views", views);
+				
+				Path dlDir = Paths.get(prj + "/downloads");
+				
+				if(Files.notExists(dlDir)) {
+					Files.createDirectory(dlDir);
+					dlDir.toFile().setExecutable(true, false);
+					dlDir.toFile().setReadable(true, false);
+					dlDir.toFile().setWritable(true, false);
+				}
+				
+				Path modelPath = Paths.get(dlDir + "/model.json");
+				
+				Files.write(modelPath, Tools.toJSON(model).getBytes());
+				modelPath.toFile().setReadable(true, false);
 
-			Path dlDir = Paths.get(prj + "/downloads");
-			
-			Path zip = Paths.get(dlDir + "/actionlogs.zip");
-			
-			Path list = Paths.get(prj + "/actionLogs.json");
-			
-			if(dir.exists()){
-				FileUtils.deleteDirectory(dir);
-			}
-
-			Files.deleteIfExists(zip);
-			
-			Files.deleteIfExists(list);
-			
-			if(!Files.exists(zip) && !dir.exists() && !Files.exists(list)) {
-				result.put("MESSAGE", "Action Log(s) were removed successfully.");
-				result.put("STATUS", "OK");
+				if(Files.exists(modelPath)) {
+					result.put("STATUS", "OK");
+					result.put("MESSAGE", "Model saved successfully in " + modelPath.getFileName());
+				}
+				else {
+					result.put("STATUS", "KO");
+					throw new Exception(modelPath.getFileName() + " not found.");
+				}
+				
 			}
 			else {
 				result.put("STATUS", "KO");
-				result.put("ERROR", "Action Log(s) were not cleaned properly.");
-			}
+				throw new Exception("Input parameters are not valid.");
+			}			
 			
 		}
 		

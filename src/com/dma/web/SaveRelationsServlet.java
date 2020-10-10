@@ -82,7 +82,16 @@ public class SaveRelationsServlet extends HttpServlet {
 //			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //			BufferedOutputStream buf = new BufferedOutputStream(bos);
 			
-			Path relFile = Paths.get(prj + "/relations.csv");
+			Path dlDir = Paths.get(prj + "/downloads");
+			
+			if(Files.notExists(dlDir)) {
+				Files.createDirectory(dlDir);
+				dlDir.toFile().setExecutable(true, false);
+				dlDir.toFile().setReadable(true, false);
+				dlDir.toFile().setWritable(true, false);
+			}
+			
+			Path relFile = Paths.get(dlDir + "/relations.csv");
 			List<String> lines = new ArrayList<String>();
 			
 			String header = "FK_NAME;PK_NAME;FKTABLE_NAME;PKTABLE_NAME;KEY_SEQ;FKCOLUMN_NAME;PKCOLUMN_NAME";

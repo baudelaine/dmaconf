@@ -19,14 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "DownloadRelations", urlPatterns = { "/DownloadRelations" })
-public class DownloadRelationsServlet extends HttpServlet {
+@WebServlet(name = "DLModel", urlPatterns = { "/DLModel" })
+public class DLModelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public DownloadRelationsServlet() {
+    public DLModelServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -41,7 +41,7 @@ public class DownloadRelationsServlet extends HttpServlet {
 			
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			Path dlDir = Paths.get(prj + "/downloads");
-			Path relFile = Paths.get(dlDir + "/relations.csv");
+			Path relFile = Paths.get(dlDir + "/model.json");
 			
 			if(Files.exists(relFile)) {
 				
@@ -59,8 +59,8 @@ public class DownloadRelationsServlet extends HttpServlet {
 				reader.close();
 				int size = bos.toByteArray().length;
 				
-				response.setContentType("text/csv");
-				response.addHeader("Content-Disposition", "attachment; filename=relations.csv");
+				response.setContentType("application/json");
+				response.addHeader("Content-Disposition", "attachment; filename=model.json");
 				response.setContentLength(size);
 				
 				OutputStream out = response.getOutputStream();

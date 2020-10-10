@@ -1,13 +1,20 @@
 package com.dma.web;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -16,19 +23,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "RemoveActionLog", urlPatterns = { "/RemoveActionLog" })
-public class RemoveActionLogServlet extends HttpServlet {
+@WebServlet(name = "UploadModel", urlPatterns = { "/UploadModel" })
+public class UploadModelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RemoveActionLogServlet() {
+    public UploadModelServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,6 +50,7 @@ public class RemoveActionLogServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
+		Map<String, Object> parms = new HashMap<String, Object>();
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		try {
@@ -58,32 +70,38 @@ public class RemoveActionLogServlet extends HttpServlet {
 			
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			result.put("PRJ", prj.toString());
-
-			File dir = new File(prj + "/actionLogs");
-
-			Path dlDir = Paths.get(prj + "/downloads");
 			
-			Path zip = Paths.get(dlDir + "/actionlogs.zip");
+			List<String> lines = new ArrayList<String>();
 			
-			Path list = Paths.get(prj + "/actionLogs.json");
-			
-			if(dir.exists()){
-				FileUtils.deleteDirectory(dir);
-			}
-
-			Files.deleteIfExists(zip);
-			
-			Files.deleteIfExists(list);
-			
-			if(!Files.exists(zip) && !dir.exists() && !Files.exists(list)) {
-				result.put("MESSAGE", "Action Log(s) were removed successfully.");
+			if(ServletFileUpload.isMultipartContent(request)){
+				
+				List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
+				for (FileItem item : items) {
+					if (!item.isFormField()) {
+						//Item is the file (and not a field)
+						LineNumberReader reader = new LineNumberReader(new BufferedReader(new InputStreamReader(item.getInputStream())));
+						String line;
+					    while ((line = reader.readLine()) != null) {
+					    	lines.add(line);
+					    }
+						result.put("READING", "OK");
+					}
+					else {
+						//Item is field (and not a file)
+						if (item.isFormField()) {
+							item.getFieldName();
+				            String value = item.getString();
+				            parms = Tools.fromJSON(new ByteArrayInputStream(value.getBytes()));
+				            result.put("PARMS", parms);
+						}
+					}
+				}
+				
+				@SuppressWarnings("unchecked")
+				Map<String, List<QuerySubject>> model = (Map<String, List<QuerySubject>>) Tools.fromJSON(String.join("", lines), new TypeReference<Map<String, List<QuerySubject>>>(){});
+				result.put("DATAS", model);
 				result.put("STATUS", "OK");
 			}
-			else {
-				result.put("STATUS", "KO");
-				result.put("ERROR", "Action Log(s) were not cleaned properly.");
-			}
-			
 		}
 		
 		catch (Exception e) {

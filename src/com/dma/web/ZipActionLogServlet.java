@@ -60,9 +60,18 @@ public class ZipActionLogServlet extends HttpServlet {
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			result.put("PRJ", prj.toString());
 
-			File dir = new File(prj + "/actionLogs/.");
+			File dir = new File(prj + "/actionLogs");
 
-			Path zip = Paths.get(prj + "/actionlogs.zip");
+			Path dlDir = Paths.get(prj + "/downloads");
+			
+			if(Files.notExists(dlDir)) {
+				Files.createDirectory(dlDir);
+				dlDir.toFile().setExecutable(true, false);
+				dlDir.toFile().setReadable(true, false);
+				dlDir.toFile().setWritable(true, false);
+			}
+			
+			Path zip = Paths.get(dlDir + "/actionlogs.zip");
 			
 			if(dir.exists()){
 				ZipUtil.pack(dir, zip.toFile(), new NameMapper() {

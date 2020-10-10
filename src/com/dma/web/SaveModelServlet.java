@@ -51,7 +51,7 @@ public class SaveModelServlet extends HttpServlet {
 		try {
 			
 			@SuppressWarnings("unchecked")
-			List<QuerySubject> querySubjects = (List<QuerySubject>) Tools.fromJSON(parms.get("data").toString(), new TypeReference<List<QuerySubject>>(){});		
+			List<QuerySubject> querySubjects = (List<QuerySubject>) Tools.fromJSON(parms.get("qss").toString(), new TypeReference<List<QuerySubject>>(){});		
 			@SuppressWarnings("unchecked")
 			List<QuerySubject> views = (List<QuerySubject>) Tools.fromJSON(parms.get("view").toString(), new TypeReference<List<QuerySubject>>(){});		
 
