@@ -1,9 +1,6 @@
 package com.dma.web;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -29,14 +26,14 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
-@WebServlet(name = "SaveRelation", urlPatterns = { "/SaveRelation" })
-public class SaveRelationServlet extends HttpServlet {
+@WebServlet(name = "SaveRelations", urlPatterns = { "/SaveRelations" })
+public class SaveRelationsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SaveRelationServlet() {
+    public SaveRelationsServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -48,7 +45,6 @@ public class SaveRelationServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 
 		Map<String, Object> result = new HashMap<String, Object>();
-		int size = 0;
 
 		try {
 			
@@ -83,13 +79,24 @@ public class SaveRelationServlet extends HttpServlet {
 		    }
 			if(rst != null) {rst.close();}
 			
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			BufferedOutputStream buf = new BufferedOutputStream(bos);
+//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//			BufferedOutputStream buf = new BufferedOutputStream(bos);
 			
-			String newLine = System.getProperty("line.separator");
+			Path dlDir = Paths.get(prj + "/downloads");
+			
+			if(Files.notExists(dlDir)) {
+				Files.createDirectory(dlDir);
+				dlDir.toFile().setExecutable(true, false);
+				dlDir.toFile().setReadable(true, false);
+				dlDir.toFile().setWritable(true, false);
+			}
+			
+			Path relFile = Paths.get(dlDir + "/relations.csv");
+			List<String> lines = new ArrayList<String>();
+			
 			String header = "FK_NAME;PK_NAME;FKTABLE_NAME;PKTABLE_NAME;KEY_SEQ;FKCOLUMN_NAME;PKCOLUMN_NAME";
 			
-			bos.write((header + newLine).getBytes());
+			lines.add(header);
 			
 			for(String table: tables){
 				
@@ -126,7 +133,7 @@ public class SaveRelationServlet extends HttpServlet {
 					key.append(rst.getString("PKTABLE_NAME") + ";");
 					key.append(rst.getShort("KEY_SEQ") + ";");
 					key.append(rst.getString("FKCOLUMN_NAME") + ";");
-					key.append(rst.getString("PKCOLUMN_NAME") + newLine);
+					key.append(rst.getString("PKCOLUMN_NAME"));
 
 					String pktable_name = rst.getString("PKTABLE_NAME");
 					
@@ -140,32 +147,42 @@ public class SaveRelationServlet extends HttpServlet {
 			        // Jump to other key if pktable is an alias
 			        if(isAlias){continue;}
 			        
-					bos.write(key.toString().getBytes());
+					lines.add(key.toString());
 					
 				}
 				if(rst != null) {rst.close();}
 				if(stmt != null) {stmt.close();}
 				if(csvCon != null) {csvCon.close();}
-				buf.flush();
+//				buf.flush();
 				
 			}
-			buf.flush();
-			size = bos.toByteArray().length;
 			
-			response.setContentType("text/csv");
-			response.addHeader("Content-Disposition", "attachment; filename=relation.csv");
-			response.setContentLength(size);
-			
-			OutputStream out = response.getOutputStream();
-			out.write(bos.toByteArray(), 0, size);
-            out.flush();
-            out.close();
-            response.flushBuffer();			
-			
-			if(bos != null) {bos.close();}
-			if(buf != null) {buf.close();}
+			Files.write(relFile, lines);
+			relFile.toFile().setReadable(true, false);
+//			buf.flush();
+//			size = bos.toByteArray().length;
+//			
+//			response.setContentType("text/csv");
+//			response.addHeader("Content-Disposition", "attachment; filename=relation.csv");
+//			response.setContentLength(size);
+//			
+//			OutputStream out = response.getOutputStream();
+//			out.write(bos.toByteArray(), 0, size);
+//            out.flush();
+//            out.close();
+//            response.flushBuffer();			
+//			
+//			if(bos != null) {bos.close();}
+//			if(buf != null) {buf.close();}
 		
-			result.put("STATUS", "OK");
+			if(Files.exists(relFile)) {
+				result.put("STATUS", "OK");
+				result.put("MESSAGE", "Relations saved successfully in " + relFile.getFileName());
+			}
+			else {
+				result.put("STATUS", "KO");
+				throw new Exception(relFile.getFileName() + " not found.");
+			}
 			
 		}
 		

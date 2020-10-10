@@ -1118,7 +1118,7 @@
 						<li><a href="#" id="rmActionLog">Remove Action Log(s)</a></li>
 						<li role="separator" class="divider"></li>
 						<li><a href="#" id="testDBConnection">Test Database Connection</a></li>
-						<li><a href="#" id="searchTool">Search Tool</a></li>
+						<li id="liSearchTool"><a href="#" id="searchTool">Search Tool</a></li>
 						<li role="separator" class="divider"></li>
 						<li class="disabled"><a href="#" id="labelFold">disabled item</a></li>
 						<li><a href="#" id="logout">Logout</a></li>
@@ -1136,7 +1136,16 @@
 						<button type="button" onclick="promptPublish()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Publish model."><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
 						<button type="button" onclick="SaveModel()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Save model to server."><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>
 						<button type="button" onclick="GetModelList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open model from server."><span class="glyphicon glyphicon-open" aria-hidden="true"></span></button>
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+						</button>
+						<input type="hidden" id="alias" value=""/>
+						<ul class="dropdown-menu" id="tablesMenu">
+							<li><a href="#" id="dlModel">Download Model</a></li>
+							<li><a href="#" id="ulModel">Upload Model</a></li>
+						</ul>
 					</div>
+					<input type="file" name="ulModelFile" id="ulModelFile" style="display: none;" accept=".json">
 				</div>
 
 
@@ -1156,7 +1165,7 @@
 							<li id="liAddSqlRel"><a href="#" id="addSqlRel">Add SQL Relations</a></li>
 							<li><a href="#" id="addCsvRel">Add CSV Relations</a></li>
 							<li><a href="#" id="removeRel">Remove Relations</a></li>
-							<li><a href="#" id="saveRel">Save Relations</a></li>
+							<li id="liSaveRel"><a href="#" id="saveRel">Save Relations</a></li>
 							<li role="separator" class="divider"></li>
 							<li><a href="#" id="loadFromXML">Load Tables from XML</a></li>
 						</ul>

@@ -1,19 +1,14 @@
 package com.dma.web;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -65,9 +60,18 @@ public class ZipActionLogServlet extends HttpServlet {
 			Path prj = Paths.get((String) request.getSession().getAttribute("projectPath"));
 			result.put("PRJ", prj.toString());
 
-			File dir = new File(prj + "/actionLogs/.");
+			File dir = new File(prj + "/actionLogs");
 
-			Path zip = Paths.get(prj + "/actionlogs.zip");
+			Path dlDir = Paths.get(prj + "/downloads");
+			
+			if(Files.notExists(dlDir)) {
+				Files.createDirectory(dlDir);
+				dlDir.toFile().setExecutable(true, false);
+				dlDir.toFile().setReadable(true, false);
+				dlDir.toFile().setWritable(true, false);
+			}
+			
+			Path zip = Paths.get(dlDir + "/actionlogs.zip");
 			
 			if(dir.exists()){
 				ZipUtil.pack(dir, zip.toFile(), new NameMapper() {
