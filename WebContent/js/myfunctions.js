@@ -38,11 +38,11 @@ var emptyOption = '<option class="fontsize" value="" data-subtext="" data-conten
 
 var relationCols = [];
 // relationCols.push({field:"checkbox", checkbox: "true"});
-relationCols.push({field:"index", title: "index", formatter: "indexFormatter", sortable: false});
+relationCols.push({field:"index", title: '<h4><span class="label label-default">Index<span></h4>', formatter: "indexFormatter", sortable: false});
 // relationCols.push({field:"_id", title: "_id", sortable: true});
 // relationCols.push({field:"key_name", title: "key_name", sortable: true});
-relationCols.push({field:"key_type", title: "key_type", sortable: true});
-relationCols.push({field:"pktable_name", title: "pktable_name", sortable: true});
+relationCols.push({field:"key_type", title: '<h4><span class="label label-default">Key Type<span></h4>', sortable: true});
+relationCols.push({field:"pktable_name", title: 'pktable_name', sortable: true});
 relationCols.push({field:"pktable_alias", title: "pktable_alias", class: "pktable_alias", editable: {type: "text", mode: "inline"}, sortable: true, events: "pktable_aliasEvents"});
 relationCols.push({field:"label", title: "Label", sortable: true});
 relationCols.push({field:"description", title: "Description", sortable: false});
@@ -108,14 +108,14 @@ newRelationCols.push();
 
 var qsCols = [];
 // qsCols.push({field:"checkbox", checkbox: "true"});
-qsCols.push({field:"index", title: "index", formatter: "indexFormatter", sortable: false});
+qsCols.push({field:"index", title: '<h4><span class="label label-default">Index<span>', formatter: "indexFormatter", sortable: false});
 // qsCols.push({field:"_id", title: "_id", sortable: true});
-qsCols.push({field:"table_name", title: "table_name", sortable: true});
-qsCols.push({field:"table_alias", title: "table_alias", editable: false, sortable: true});
-qsCols.push({field:"type", title: "type", sortable: true});
+qsCols.push({field:"table_name", title: '<h4><span class="label label-default">Table Name<span>', sortable: true});
+qsCols.push({field:"table_alias", title: '<h4><span class="label label-default">Table Alias<span>', editable: false, sortable: true});
+qsCols.push({field:"type", title: '<h4><span class="label label-default">Type<span>', sortable: true});
 // qsCols.push({field:"visible", title: "visible", formatter: "boolFormatter", align: "center", sortable: false});
 
-qsCols.push({field:"folder", title: "Folder", editable: {
+qsCols.push({field:"folder", title: '<h4><span class="label label-default">Folder<span>', editable: {
   type: "select",
   mode: "inline",
   value: "",
@@ -136,12 +136,12 @@ qsCols.push({field:"folder", title: "Folder", editable: {
 });
 // qsCols.push({field:"folder", title: "Folder", editable: {type: "select", mode: "inline"}, sortable: true});
 // qsCols.push({field:"folder", title: "Folder", editable: {type: "text", mode: "inline"}, sortable: true});
-qsCols.push({field:"filters", title: "filters", formatter: "filtersFormatter", align: "center"});
-qsCols.push({field:"secFilter", title: "security filters", editable: {type: "textarea", mode: "inline"}, sortable: true});
-qsCols.push({field:"label", title: "label", editable: {type: "textarea", mode: "inline"}, sortable: true});
-qsCols.push({field:"description", title: "Description", sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
-qsCols.push({field:"merge", title: "Merge", sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
-qsCols.push({field:"recCount", title: "count(*)", sortable: true});
+qsCols.push({field:"filters", title: '<h4><span class="label label-default">Filters<span>', formatter: "filtersFormatter", align: "center"});
+qsCols.push({field:"secFilter", title: '<h4><span class="label label-default">Security Filters<span>', editable: {type: "textarea", mode: "inline"}, sortable: true});
+qsCols.push({field:"label", title: '<h4><span class="label label-default">Label<span>', editable: {type: "textarea", mode: "inline"}, sortable: true});
+qsCols.push({field:"description", title: '<h4><span class="label label-default">Description<span>', sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
+qsCols.push({field:"merge", title: '<h4><span class="label label-default">Merge<span>', sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
+qsCols.push({field:"recCount", title: '<h4><span class="label label-default">Count(*)<span>', sortable: true});
 qsCols.push({field:"recurseCount", title: '<i class="glyphicon glyphicon-repeat" title="Set recurse count"></i>', editable: {
     type: "select",
     mode: "inline",
@@ -7178,7 +7178,27 @@ function saveRelsQuery(){
 }
 
 saveRel.addEventListener('click', function(event){
-  window.location.href = "SaveRelation";
+
+  $.ajax({
+    type: 'POST',
+    url: "SaveRelations",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE + "<br>Your download is about to begin...", "alert-success", "bottom");
+        window.location.href = "DownloadRelations";
+      }
+      else{
+        showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom");
+      }
+    },
+    error: function(data) {
+      console.log(data);
+      showalert("ERROR", "Unknown","alert-danger", "bottom");
+    }
+  });  
 
   event.preventDefault();
 }, false);
