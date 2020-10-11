@@ -97,4 +97,3 @@ public class OpenProjectServlet extends HttpServlet {
 	}
 
 }
-

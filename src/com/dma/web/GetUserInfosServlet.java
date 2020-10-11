@@ -1,6 +1,7 @@
 package com.dma.web;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -90,9 +93,30 @@ public class GetUserInfosServlet extends HttpServlet {
 					ObjectMapper mapper = new ObjectMapper();
 			        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 					Map<String, Project> projects = mapper.readValue(br, new TypeReference<Map<String, Project>>(){});
+					
+					Map<String, Project> OrderedProjects = new HashMap<String, Project>();
+					
+					File[] fs = wks.toFile().listFiles(File::isDirectory);
+					
+					
+					Arrays.sort(fs, new Comparator<File>() {
+					    public int compare(File f1, File f2) {
+					        return Long.compare(f2.lastModified(), f1.lastModified());
+					    }
+					});			
+					
+					
+					for(File file: fs) {
+						String key = file.getName();
+						if(projects.get(key) != null) {
+							OrderedProjects.put(key, projects.get(key));
+						}
+					}
+					
 					result.put("STATUS", "OK");
-					result.put("PROJECTS", projects);
-					request.getSession().setAttribute("projects", projects);
+					
+					result.put("PROJECTS", OrderedProjects);
+					request.getSession().setAttribute("projects", OrderedProjects);
 					result.put("WKS", wks.toString());
 				}
 				catch(Exception e){

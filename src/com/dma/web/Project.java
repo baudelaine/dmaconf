@@ -11,6 +11,7 @@ public class Project {
 	Resource resource = null;
 	String description = "";
 	String timestamp = "";
+	Long ts = 0L;
 	boolean relationCount = true;
 	
 	public String getName() {
@@ -48,6 +49,13 @@ public class Project {
 	}
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public Long getTs() {
+		return ts;
+	}
+	public void setTs(Long ts) {
+		this.ts = ts;
 	}
 	public boolean isRelationCount() {
 		return relationCount;

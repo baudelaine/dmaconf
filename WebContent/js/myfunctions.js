@@ -42,23 +42,23 @@ relationCols.push({field:"index", title: '<h4><span class="label label-default">
 // relationCols.push({field:"_id", title: "_id", sortable: true});
 // relationCols.push({field:"key_name", title: "key_name", sortable: true});
 relationCols.push({field:"key_type", title: '<h4><span class="label label-default">Key Type<span></h4>', sortable: true});
-relationCols.push({field:"pktable_name", title: 'pktable_name', sortable: true});
-relationCols.push({field:"pktable_alias", title: "pktable_alias", class: "pktable_alias", editable: {type: "text", mode: "inline"}, sortable: true, events: "pktable_aliasEvents"});
-relationCols.push({field:"label", title: "Label", sortable: true});
-relationCols.push({field:"description", title: "Description", sortable: false});
-relationCols.push({field:"recCountPercent", title: "count(*) %", sortable: true});
-relationCols.push({field:"relationship", title: "relationship", editable: {type: "textarea", mode: "inline", rows: 4}});
-relationCols.push({field:"fin", title: "fin", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"ref", title: "ref", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"sec", title: "sec", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"tra", title: "tra", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"nommageRep", title: "RepTableName", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"above", title: "Above", editable: {type: "text", mode: "inline"}, align: "center"});
+relationCols.push({field:"pktable_name", title: '<h4><span class="label label-default">PKTable Name<span></h4>', sortable: true});
+relationCols.push({field:"pktable_alias", title: '<h4><span class="label label-default">PKTable Alias<span></h4>', class: "pktable_alias", editable: {type: "text", mode: "inline"}, sortable: true, events: "pktable_aliasEvents"});
+relationCols.push({field:"label", title: '<h4><span class="label label-default">Label<span></h4>', sortable: true});
+relationCols.push({field:"description", title: '<h4><span class="label label-default">Description<span></h4>', sortable: false});
+relationCols.push({field:"recCountPercent", title: '<h4><span class="label label-default">Count(*) %<span></h4>', sortable: true});
+relationCols.push({field:"relationship", title: '<h4><span class="label label-default">Relationship<span></h4>', editable: {type: "textarea", mode: "inline", rows: 4}});
+relationCols.push({field:"fin", title: '<h4><span class="label label-default">Fin<span></h4>', formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"ref", title: '<h4><span class="label label-default">Ref<span></h4>', formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"sec", title: '<h4><span class="label label-default">Sec<span></h4>', formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"tra", title: '<h4><span class="label label-default">Tra<span></h4>', formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"nommageRep", title: '<h4><span class="label label-default">RepTableName<span></h4>', formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"above", title: '<h4><span class="label label-default">Above<span></h4>', editable: {type: "text", mode: "inline"}, align: "center"});
 // relationCols.push({field:"above", title: "Above", formatter: "aboveFormatter", align: "center", events: "aboveEvents"});
 // relationCols.push({field:"above", title: "Above", formatter: "aboveFormatter", align: "center", events: "aboveEvents"});
-relationCols.push({field:"leftJoin", title: "Left Join", formatter: "boolFormatter", align: "center"});
+relationCols.push({field:"leftJoin", title: '<h4><span class="label label-default">Left Join<span></h4>', formatter: "boolFormatter", align: "center"});
 // relationCols.push({field:"usedForDimensions", title: "Used For Dimensions", formatter: "boolFormatter", align: "center"});
-relationCols.push({field:"usedForDimensions", title: "Used For Dimensions", editable: {
+relationCols.push({field:"usedForDimensions", title: '<h4><span class="label label-default">Used For Dimensions<span></h4>', editable: {
   type: "select", mode: "inline", value: "",
   source: function(){
     var source = [];
@@ -176,33 +176,33 @@ qsCols.push({field:"linker_ids", title: "linker_ids"});
 
 var fieldCols = [];
 // fieldCols.push({field:"checkbox", checkbox: "true"});
-fieldCols.push({field:"index", title: "index", formatter: "indexFormatter", sortable: false});
-fieldCols.push({field:"field_name", title: "Name", sortable: true });
-fieldCols.push({field:"alias", title: "Alias", sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
-fieldCols.push({class:"field_type", field:"field_type", title: "Type", editable: {type: "text", mode: "inline"}, sortable: true});
+fieldCols.push({field:"index", title: '<h4><span class="label label-default">index</span>', formatter: "indexFormatter", sortable: false});
+fieldCols.push({field:"field_name", title: '<h4><span class="label label-default">Name</span>', sortable: true });
+fieldCols.push({field:"alias", title: '<h4><span class="label label-default">Alias</span>', sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
+fieldCols.push({class:"field_type", field:'field_type', title: '<h4><span class="label label-default">Type</span>', editable: {type: "text", mode: "inline"}, sortable: true});
 
 var customFieldType = {
   type: "select",
   mode: "inline"
 };
 
-fieldCols.push({field:"label", title: "label", editable: {type: "text", mode: "inline"}, sortable: true});
-fieldCols.push({field:"description", title: "Description", sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
-fieldCols.push({field:"expression", title: "Expression", sortable: false, formatter: "expressionFormatter", align: "center"});
-fieldCols.push({field:"traduction", title: "traduction", formatter: "boolFormatter", align: "center", sortable: false});
-fieldCols.push({field:"hidden", title: "Hidden", formatter: "hiddenFormatter", align: "center", sortable: false});
-// fieldCols.push({field:"field_type", title: "field_type", editable: false, sortable: true});
-// fieldCols.push({field:"field_size", title: "field_size", editable: false, sortable: true});
-// fieldCols.push({field:"nullable", title: "nullable", editable: false, sortable: true});
-// fieldCols.push({field:"timezone", title: "timezone", formatter: "boolFormatter", align: "center", sortable: false});
-fieldCols.push({field:"icon", title: "Icon", editable:{
+fieldCols.push({field:"label", title: '<h4><span class="label label-default">Label</span>', editable: {type: "text", mode: "inline"}, sortable: true});
+fieldCols.push({field:"description", title: '<h4><span class="label label-default">Description</span>', sortable: false, editable: {type: "textarea", mode: "inline", rows: 4}});
+fieldCols.push({field:"expression", title: '<h4><span class="label label-default">Expression</span>', sortable: false, formatter: "expressionFormatter", align: "center"});
+fieldCols.push({field:"traduction", title: '<h4><span class="label label-default">Traduction</span>', formatter: "boolFormatter", align: "center", sortable: false});
+fieldCols.push({field:"hidden", title: '<h4><span class="label label-default">Hidden</span>', formatter: "hiddenFormatter", align: "center", sortable: false});
+// fieldCols.push({field:"field_type", title: '<h4><span class="label label-default">field_type</span>', editable: false, sortable: true});
+// fieldCols.push({field:"field_size", title: '<h4><span class="label label-default">field_size</span>', editable: false, sortable: true});
+// fieldCols.push({field:"nullable", title: '<h4><span class="label label-default">nullable</span>', editable: false, sortable: true});
+// fieldCols.push({field:"timezone", title: '<h4><span class="label label-default">timezone</span>', formatter: "boolFormatter", align: "center", sortable: false});
+fieldCols.push({field:"icon", title: '<h4><span class="label label-default">Icon</span>', editable:{
   type: "select",
   mode: "inline",
   value: "Attribute",
   source: [{value: "Attribute", text: "Attribute"}, {value: "Identifier", text: "Identifier"}, {value: "Fact", text: "Fact"}]
   }
 });
-fieldCols.push({field:"displayType", title: "DisplayType", editable:{
+fieldCols.push({field:"displayType", title: '<h4><span class="label label-default">DisplayType</span>', editable:{
   type: "select",
   mode: "inline",
   value: "Value",
@@ -228,8 +228,8 @@ var measure = {
   ]
 };
 
-fieldCols.push({field:"measure", title: "Measure", editable: measure});
-fieldCols.push({field:"dimensions", title: "Dimensions", formatter: "dimensionsFormatter", align: "center"});
+fieldCols.push({field:"measure", title: '<h4><span class="label label-default">Measure</span>', editable: measure});
+fieldCols.push({field:"dimensions", title: '<h4><span class="label label-default">Dimensions</span>', formatter: "dimensionsFormatter", align: "center"});
 
 var dateDimensions = {
   type: "checklist",
@@ -255,8 +255,8 @@ var dateDimensions = {
 // fieldCols.push({field:"buildDrillPath", title: '<i class="glyphicon glyphicon-zoom-in"></i>', formatter: "buildDrillPathFormatter", align: "center"});
 fieldCols.push({field:"addDimension", title: '<i class="glyphicon glyphicon-plus-sign" title="Add new dimension"></i>', formatter: "addDimensionFormatter", align: "center"});
 
-fieldCols.push({field:"folder", title: "Folder", sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
-fieldCols.push({field:"role", title: "Role", sortable: true });
+fieldCols.push({field:"folder", title: '<h4><span class="label label-default">Folder</span>', sortable: false, editable: {type: "textarea", mode: "inline", rows: 2}});
+fieldCols.push({field:"role", title: '<h4><span class="label label-default">Role</span>', sortable: true });
 
 fieldCols.push({field:"remove", title: '<i class="glyphicon glyphicon-trash"></i>', formatter: "removeFieldFormatter", align: "center"});
 
@@ -264,12 +264,12 @@ fieldCols.push({field:"remove", title: '<i class="glyphicon glyphicon-trash"></i
 
 
 var dimensionCols = [];
-dimensionCols.push({field:"index", title: "index", formatter: "indexFormatter", sortable: false});
-dimensionCols.push({field:"dimension", title: "Dimension", editable: {type: 'text', mode: 'inline'}});
-dimensionCols.push({field:"order", title: "Order", editable: {type: "textarea", mode: "inline", rows: 2}, sortable: true});
-dimensionCols.push({field:"bk", title: "BK", editable: {type: "textarea", mode: "inline", rows: 4}, sortable: true});
-dimensionCols.push({field:"attributs", title: "Attributs", editable: {type: "textarea", mode: "inline", rows: 4}, sortable: true});
-dimensionCols.push({field:"hierarchyName", title: "Hierarchy Name", editable: {type: "text", mode: "inline"}, sortable: true});
+dimensionCols.push({field:"index", title: '<h4><span class="label label-default">index</span></h4>', formatter: "indexFormatter", sortable: false});
+dimensionCols.push({field:"dimension", title: '<h4><span class="label label-default">Dimension</span></h4>', editable: {type: 'text', mode: 'inline'}});
+dimensionCols.push({field:"order", title: '<h4><span class="label label-default">Order</span></h4>', editable: {type: "textarea", mode: "inline", rows: 2}, sortable: true});
+dimensionCols.push({field:"bk", title: '<h4><span class="label label-default">BK</span></h4>', editable: {type: "textarea", mode: "inline", rows: 4}, sortable: true});
+dimensionCols.push({field:"attributs", title: '<h4><span class="label label-default">Attributs</span></h4>', editable: {type: "textarea", mode: "inline", rows: 4}, sortable: true});
+dimensionCols.push({field:"hierarchyName", title: '<h4><span class="label label-default">Hierarchy Name</span></h4>', editable: {type: "text", mode: "inline"}, sortable: true});
 dimensionCols.push({field:"buildDrillPath", title: '<i class="glyphicon glyphicon-zoom-in"></i>', formatter: "buildDrillPathFormatter", align: "center"});
 dimensionCols.push({field:"remove", title: '<i class="glyphicon glyphicon-trash"></i>', formatter: "removeDimensionFormatter", align: "center"});
 
@@ -4510,23 +4510,49 @@ function SetProjectName(){
 
 function Test(){
 
-  var form = $("#hiddenForm").html();
-  // var form = $(".bootbox-body #myForm").html();
-  bootbox.confirm({
-      title: "Publish Model",
-      message: form,
-      callback: function (result) {
-          // do something
-          console.log($("#fn").val());
-          var username = form.find('input[name=FirstName]').val();
-          console.log(username);          
-      }
-  });
+  // forceLogout();
+
+  // var form = $("#hiddenForm").html();
+  // // var form = $(".bootbox-body #myForm").html();
+  // bootbox.confirm({
+  //     title: "Publish Model",
+  //     message: form,
+  //     callback: function (result) {
+  //         // do something
+  //         console.log($("#fn").val());
+  //         var username = form.find('input[name=FirstName]').val();
+  //         console.log(username);          
+  //     }
+  // });
 
 }
 
 function showAL(){
   $("#showActionLog").trigger("click");
+}
+
+function forceLogout(message){
+
+  if(!message){
+    message = "";
+  }
+
+  var text = 'Login again for changes to take effect.' + message;
+  
+  var html = [
+    '<div class="form-group"><label><h4>' + text + '<h4></label></div>',
+    '<form id="forceLogout" method="post" action="ibm_security_logout" name="logout_form">',
+    '<input type="hidden" name="logoutExitPage" VALUE="login.html">',
+    '<input type="submit" class="hidden btn btn-primary" name="logout" value="Logout">',
+    '</form>'
+  ].join('');
+
+  bootbox.alert(html,
+    function(result){
+    $("#forceLogout").submit();
+  });
+
+
 }
 
 function promptPublish(){
@@ -4661,10 +4687,10 @@ function SaveModel(){
 
   $datasTable.bootstrapTable("filterBy", {});
   var modelName;
-  var data = $datasTable.bootstrapTable('getData');
+  var qss = $datasTable.bootstrapTable('getData');
   var view = $('#ViewsTable').bootstrapTable("getData");
 
-  if (data.length == 0) {
+  if (qss.length == 0) {
     showalert("SaveModel()", "Nothing to save.", "alert-warning", "bottom");
     return;
   }
@@ -4683,9 +4709,8 @@ function SaveModel(){
     if(!modelName){
       return;
     }
-    console.log(data);
     var parms = {modelName: removeSpecialChars(modelName), 
-      data: JSON.stringify(data),
+      qss: JSON.stringify(qss),
       view: JSON.stringify(view)
     };
     console.log(parms);
@@ -6341,7 +6366,7 @@ $("#removeQS").click(function(){
       },
       confirm: {
           label: 'Confirm',
-          className: 'btn btn-danger'
+          className: 'btn btn-warning'
       }
     },
     callback: function(result){
@@ -7123,6 +7148,283 @@ $("#addSqlRel").click(function(){
   $('#relsQueryModal').modal('toggle');
 })
 
+$("#ulWks").click(function(){
+
+  var message = [
+    '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
+    '&nbsp;&nbsp;&nbsp;&nbsp; Current workspace will be dropped. All your datas will be replaced.'
+  ].join("");
+
+  bootbox.dialog({ 
+    title: 'Upload Workspace',
+    message: message,
+    size: 'medium',
+    onEscape: true,
+    backdrop: true,
+    buttons: {
+        cancel: {
+            label: 'Cancel',
+            className: 'btn-default',
+            callback: function(){
+                                
+            }
+        },
+        upload: {
+            label: 'Upload workspace',
+            className: 'btn-warning',
+            callback: function(){
+               $("#ulWksFile").trigger('click');                 
+            }
+        },
+        save: {
+            label: 'Save workspace',
+            className: 'btn-success',
+            callback: function(){
+              $("#dlWks").trigger('click');             
+            }
+        }
+    }
+  })
+
+})
+
+$("#rmPrj").click(function(){
+
+  var message = [
+    '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
+    '&nbsp;&nbsp;&nbsp;&nbsp; All your data will be dropped.'
+  ].join("");
+
+
+  bootbox.dialog({ 
+    title: 'Remove current project',
+    message: message,
+    size: 'medium',
+    onEscape: true,
+    backdrop: true,
+    buttons: {
+        cancel: {
+            label: 'Cancel',
+            className: 'btn-default',
+            callback: function(){
+                                
+            }
+        },
+        remove: {
+            label: 'Remove current project',
+            className: 'btn-warning',
+            callback: function(){
+              $.ajax({
+                type: 'POST',
+                url: "RMPrj",
+                dataType: 'json',
+            
+                success: function(data) {
+                  console.log(data);
+                  showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+                  $('#DatasTable').bootstrapTable('load', []);
+                  $('#ViewsTable').bootstrapTable('load', []);
+                  forceLogout();
+              },
+                error: function(data) {
+                    console.log(data);
+                    showalert("ERROR", "Unknown", "alert-danger", "bottom");
+            
+                }
+            
+              });            }
+        },
+        save: {
+            label: 'Backup current project',
+            className: 'btn-success',
+            callback: function(){
+              $("#dlPrj").trigger('click');             
+            }
+        }
+    }
+  })
+
+
+
+})
+
+$("#rmWks").click(function(){
+
+  var message = [
+    '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
+    '&nbsp;&nbsp;&nbsp;&nbsp; All your data will be dropped. Do you really want to clean your room ?'
+  ].join("");
+
+  bootbox.dialog({ 
+    title: 'Remove workspace',
+    message: message,
+    size: 'medium',
+    onEscape: true,
+    backdrop: true,
+    buttons: {
+        cancel: {
+            label: 'Cancel',
+            className: 'btn-default',
+            callback: function(){
+                                
+            }
+        },
+        remove: {
+            label: 'Remove workspace',
+            className: 'btn-warning',
+            callback: function(){
+              $.ajax({
+                type: 'POST',
+                url: "RMWks",
+                dataType: 'json',
+            
+                success: function(data) {
+                  console.log(data);
+                  showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+                  $('#DatasTable').bootstrapTable('load', []);
+                  $('#ViewsTable').bootstrapTable('load', []);
+                  forceLogout();
+              },
+                error: function(data) {
+                    console.log(data);
+                    showalert("ERROR", "Unknown", "alert-danger", "bottom");
+                }
+            
+              });
+            }
+        },
+        save: {
+            label: 'Backup workspace',
+            className: 'btn-success',
+            callback: function(){
+              $("#dlWks").trigger('click');             
+            }
+        }
+    }
+  })
+
+})
+
+
+$("#ulPrj").click(function(){
+  $("#ulPrjFile").trigger('click');
+})
+
+$("#ulPrjFile").change(function(){
+  var fd = new FormData();
+
+  var file = $(this)[0].files[0];
+  // console.log(file);
+  // var fileName = file.name;
+
+  fd.append('file', file, file.name);
+  // console.log(fd);
+
+  $.ajax({
+    url: "UploadPrj",
+    type: "POST",
+    data: fd,
+    enctype: 'multipart/form-data',
+    // dataType: 'application/text',
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,   // tell jQuery not to set contentType
+		success: function(data) {
+      console.log(data);
+      showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+      $('#DatasTable').bootstrapTable('load', []);
+      $('#ViewsTable').bootstrapTable('load', []);
+      var message = '<br><br>Then open project :' +
+      '<br><h3><span class="label label-primary">' + data.DATAS.name + '</span></h3>'      
+      forceLogout(message);
+		},
+		error: function(data) {
+      console.log(data);
+      showalert("ERROR", "Unknown", "alert-danger", "bottom");
+		}
+  });
+
+  $(this).val('');  
+
+})
+
+
+$("#ulWksFile").change(function(){
+  var fd = new FormData();
+
+  var file = $(this)[0].files[0];
+  // console.log(file);
+  // var fileName = file.name;
+
+  fd.append('file', file, file.name);
+  // console.log(fd);
+
+  $.ajax({
+    url: "UploadWks",
+    type: "POST",
+    data: fd,
+    enctype: 'multipart/form-data',
+    // dataType: 'application/text',
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,   // tell jQuery not to set contentType
+		success: function(data) {
+      console.log(data);
+      showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+      $('#DatasTable').bootstrapTable('load', []);
+      $('#ViewsTable').bootstrapTable('load', []);
+      forceLogout();
+		},
+		error: function(data) {
+      console.log(data);
+      showalert("ERROR", "Unknown", "alert-danger", "bottom");
+		}
+  });
+
+  $(this).val('');  
+
+})
+
+$("#dlPrj").click(function(){
+
+  $.ajax({
+    type: 'POST',
+    url: "ZipPRJ",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      showalert(data.FROM, data.MESSAGE + "<br>Your download is about to begin...", "alert-success", "bottom");
+      window.location.href = "DLPrj";
+  },
+    error: function(data) {
+        console.log(data);
+        showalert("ERROR", "Unknown", "alert-danger", "bottom");
+
+    }
+
+  });
+})
+
+
+$("#dlWks").click(function(){
+  $.ajax({
+    type: 'POST',
+    url: "ZipWKS",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      showalert(data.FROM, data.MESSAGE + "<br>Your download is about to begin...", "alert-success", "bottom");
+      window.location.href = "DLWks";
+  },
+    error: function(data) {
+        console.log(data);
+        showalert("ERROR", "Unknown", "alert-danger", "bottom");
+
+    }
+
+  });
+})
+
 $('#relsQueryModal').on('shown.bs.modal', function() {
 
   $.ajax({
@@ -7250,9 +7552,14 @@ $("#ulModelFile").change(function(){
 
 $("#ulModel").click(function(){
 
+  var message = [
+    '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
+    '&nbsp;&nbsp;&nbsp;&nbsp; Current model will be dropped.'
+  ].join("");
+
   bootbox.dialog({ 
     title: 'Upload model',
-    message: '<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> Current model will be dropped.',
+    message: message,
     size: 'medium',
     onEscape: true,
     backdrop: true,
@@ -7279,7 +7586,7 @@ $("#ulModel").click(function(){
             }
         }
     }
-})
+  })
 
 })
 

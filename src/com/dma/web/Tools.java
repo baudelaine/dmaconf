@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,6 +192,19 @@ public class Tools {
 		}
 		
 		return null;
+		
+	}
+	
+	public final static String getCurrentTimestamp() {
+		
+		Calendar c = Calendar.getInstance();
+		
+		java.text.SimpleDateFormat mois = new java.text.SimpleDateFormat("MM");
+		
+		String date = c.get(Calendar.YEAR) + "-" + c.get(Calendar.MONTH) + "-" + c.get(Calendar.DAY_OF_MONTH);
+		date = c.get(Calendar.YEAR) + "-" + mois.format(c.getTime()) + "-" + c.get(Calendar.DAY_OF_MONTH);
+		String time = c.get(Calendar.HOUR_OF_DAY) + "-" + c.get(Calendar.MINUTE) + "-" + c.get(Calendar.SECOND);
+		return date + "-" + time;
 		
 	}
 

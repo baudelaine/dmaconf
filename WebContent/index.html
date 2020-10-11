@@ -460,7 +460,7 @@
 	        <div class="modal-footer">
 						<form method="post" action='ibm_security_logout' name="logout_form">
 							<input type="hidden" name="logoutExitPage" VALUE="login.html">
-							<input type="submit" class="btn btn-danger" name="logout" value="Logout">
+							<input type="submit" class="btn btn-primary" name="logout" value="Logout">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 	          </form>
 
@@ -1117,14 +1117,27 @@
 						<li><a href="#" id="dlActionLog">Download Action Log(s)</a></li>
 						<li><a href="#" id="rmActionLog">Remove Action Log(s)</a></li>
 						<li role="separator" class="divider"></li>
+						<li><a href="#" id="ulPrj">Upload Project</a></li>
+						<li><a href="#" id="dlPrj">Download Project</a></li>
+						<li><a href="#" id="rmPrj">Remove Project</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" id="ulWks">Upload Workspace</a></li>
+						<li><a href="#" id="dlWks">Download Workspace</a></li>
+						<li><a href="#" id="rmWks">Remove Workspace</a></li>
+						<li role="separator" class="divider"></li>
 						<li><a href="#" id="testDBConnection">Test Database Connection</a></li>
+						<li class="disabled"><a href="#" id="testCognosConnection">Test Cognos Connection</a></li>
+						<li class="disabled"><a href="#" id="testModelDirConnection">Test Models Directory access</a></li>
+						<li role="separator" class="divider"></li>
 						<li id="liSearchTool"><a href="#" id="searchTool">Search Tool</a></li>
 						<li role="separator" class="divider"></li>
-						<li class="disabled"><a href="#" id="labelFold">disabled item</a></li>
+						<li class="disabled"><a href="#" id="settings">Settings</a></li>
 						<li><a href="#" id="logout">Logout</a></li>
 
 					</ul>
 					<input type="file" name="actionLogFile" id="actionLogFile" style="display: none;" accept=".xml">
+					<input type="file" name="ulWksFile" id="ulWksFile" style="display: none;" accept=".zip">
+					<input type="file" name="ulPrjFile" id="ulPrjFile" style="display: none;" accept=".zip">
 
 
 					</div>
@@ -1132,10 +1145,10 @@
 
 				<div class="input-group">
 					<div class="input-group-btn">
-						<button type="button" onclick="Test0()" class="hidden btn btn-default" data-toggle="tooltip" data-placement="top" title="Search.">Test</button>
+						<button type="button" onclick="Test()" class="hidden btn btn-default" data-toggle="tooltip" data-placement="top" title="Test.">Test</button>
 						<button type="button" onclick="promptPublish()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Publish model."><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
-						<button type="button" onclick="SaveModel()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Save model to server."><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>
-						<button type="button" onclick="GetModelList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open model from server."><span class="glyphicon glyphicon-open" aria-hidden="true"></span></button>
+						<button type="button" onclick="SaveModel()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Save model to server."><span style="font-size: 15px" class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
+						<button type="button" onclick="GetModelList()" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Open model from server."><span style="font-size: 15px" class="glyphicon glyphicon-import" aria-hidden="true"></span style="font-size: 15px"></button>
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
 						</button>
@@ -1143,6 +1156,7 @@
 						<ul class="dropdown-menu" id="tablesMenu">
 							<li><a href="#" id="dlModel">Download Model</a></li>
 							<li><a href="#" id="ulModel">Upload Model</a></li>
+							<li class="disabled"><a href="#" id="rmModel">Remove Model</a></li>
 						</ul>
 					</div>
 					<input type="file" name="ulModelFile" id="ulModelFile" style="display: none;" accept=".json">
@@ -1246,6 +1260,20 @@
 						</ul>
 					</div>
 				</div>
+
+				<!-- <div class="input-group" id="hierInputGroup">
+						<div class="input-group-btn">
+								<select class="selectpicker" data-style="btn-default" id="hierSelect" data-live-search="true" title="Hierarchy Names..."></select>
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+								</button>
+								<ul class="dropdown-menu" id="hierMenu">
+										<li><a href="#" id="addHier">Add</a></li>
+										<li><a href="#" id="labelHier">Label</a></li>
+										<li><a href="#" id="removeHier">Remove</a></li>
+								</ul>
+						</div>
+				</div> -->
 
 
 				<div class="input-group pull-right">

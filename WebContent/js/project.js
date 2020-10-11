@@ -37,44 +37,189 @@ $(".list-group a").click(function() {
   var $id = $(this).attr("id");
   console.log("$id=" + $id);
 
-  if($id == "open"){
-    $modal = $('#dynamicModal');
-    $modal.find('.modal-header').find('.modal-title').empty();
-    $modal.find('.modal-header').find('.container-fluid').empty();
+  switch($id){
 
-    $modal.find('.modal-body').empty();
-    $modal.find('.modal-footer').empty();
+    case "open":
+      $modal = $('#dynamicModal');
+      $modal.find('.modal-header').find('.modal-title').empty();
+      $modal.find('.modal-header').find('.container-fluid').empty();
 
-    var openTitle = "<h4>Existing project(s).</h4>"
+      $modal.find('.modal-body').empty();
+      $modal.find('.modal-footer').empty();
 
-    var openBody = '<div class="container-fluid"><div class="row"><form role="form"><div class="form-group">';
-    openBody += '<input id="searchinput" class="form-control" type="search" placeholder="Search..." autofocus/></div>';
-    openBody += '<div id="searchlist" class="list-group">';
+      var openTitle = "<h4>Existing project(s).</h4>"
 
-    $.each(datas.PROJECTS, function(i, obj){
-      openBody += '<a href="#" id="' + i +'" class="list-group-item"><span>' + obj.name + ' - ' + obj.timestamp + '<br>' +
-        obj.resource.dbName + ' - ' + obj.dbSchema + ' - ' + obj.resource.dbEngine +
-        '<br>' + obj.resource.cognosCatalog + ' - ' + obj.resource.cognosDataSource + ' - ' + obj.resource.cognosSchema +
-        '<br>' + obj.description +
-        '</span></a>';
-    });
-    openBody += '</div></form></div></div><script>';
-    openBody += '$("#searchlist").btsListFilter("#searchinput", {itemChild: "span", initial: false, casesensitive: false,});';
-    openBody += '$(".list-group a").click(function(){OpenProject($(this).attr("id"));});';
-    openBody += '</script>';
+      var openBody = '<div class="container-fluid"><div class="row"><form role="form"><div class="form-group">';
+      openBody += '<input id="searchinput" class="form-control" type="search" placeholder="Search..." autofocus/></div>';
+      openBody += '<div id="searchlist" class="list-group">';
 
-    var footer = '<input type="button" class="btn btn-default" id="back" value="Back">';
-    footer += '<script>$("#back").click(function(){location.reload(true);});</script>';
+      $.each(datas.PROJECTS, function(i, obj){
+        openBody += '<a href="#" id="' + i +'" class="list-group-item"><span>' + obj.name + ' - ' + obj.timestamp + '<br>' +
+          obj.resource.dbName + ' - ' + obj.dbSchema + ' - ' + obj.resource.dbEngine +
+          '<br>' + obj.resource.cognosCatalog + ' - ' + obj.resource.cognosDataSource + ' - ' + obj.resource.cognosSchema +
+          '<br>' + obj.description +
+          '</span></a>';
+      });
+      openBody += '</div></form></div></div><script>';
+      openBody += '$("#searchlist").btsListFilter("#searchinput", {itemChild: "span", initial: false, casesensitive: false,});';
+      openBody += '$(".list-group a").click(function(){OpenProject($(this).attr("id"));});';
+      openBody += '</script>';
 
-    $modal.find('.modal-header').find('.modal-title').append(openTitle);
-    $modal.find('.modal-body').append(openBody);
-    $modal.find('.modal-footer').append(footer);
-  }
-  else{
-    $('#newProjectModal').modal('toggle');
+      var footer = '<input type="button" class="btn btn-default" id="back" value="Back">';
+      footer += '<script>$("#back").click(function(){location.reload(true);});</script>';
+
+      $modal.find('.modal-header').find('.modal-title').append(openTitle);
+      $modal.find('.modal-body').append(openBody);
+      $modal.find('.modal-footer').append(footer);
+    break;
+
+    case "new":
+      $('#newProjectModal').modal('toggle');
+      break;
+
+    case "ulPrj":
+      $("#ulPrjFile").trigger('click');
+      break;
+
+    case "ulWks":
+
+      var message = [
+        '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
+        '&nbsp;&nbsp;&nbsp;&nbsp; Current workspace will be dropped. All your datas will be replaced.'
+      ].join("");
+    
+      bootbox.dialog({ 
+        title: 'Upload Workspace',
+        message: message,
+        size: 'medium',
+        onEscape: true,
+        backdrop: true,
+        buttons: {
+            cancel: {
+                label: 'Cancel',
+                className: 'btn-default',
+                callback: function(){
+                                    
+                }
+            },
+            upload: {
+                label: 'Upload workspace',
+                className: 'btn-warning',
+                callback: function(){
+                   $("#ulWksFile").trigger('click');                 
+                }
+            },
+            save: {
+                label: 'Save workspace',
+                className: 'btn-success',
+                callback: function(){
+                  $.ajax({
+                    type: 'POST',
+                    url: "ZipWKS",
+                    dataType: 'json',
+                
+                    success: function(data) {
+                      console.log(data);
+                      window.location.href = "DLWks";
+                  },
+                    error: function(data) {
+                        console.log(data);
+                
+                    }
+                
+                  });                }
+            }
+        }
+      })
+    
+      break;
+    
+    default:
+
   }
 
 });
+
+$("#ulWksFile").change(function(){
+  var fd = new FormData();
+
+  var file = $(this)[0].files[0];
+  // console.log(file);
+  // var fileName = file.name;
+
+  fd.append('file', file, file.name);
+  // console.log(fd);
+
+  $.ajax({
+    url: "UploadWks",
+    type: "POST",
+    data: fd,
+    enctype: 'multipart/form-data',
+    // dataType: 'application/text',
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,   // tell jQuery not to set contentType
+		success: function(data) {
+      console.log(data);
+      forceLogout();
+		},
+		error: function(data) {
+      console.log(data);
+		}
+  });
+
+  $(this).val('');  
+
+})
+
+function forceLogout(){
+
+  var text = 'Login again for changes to take effect.';
+  
+  var html = [
+    '<div class="form-group"><label><h4>' + text + '<h4></label></div>',
+    '<form id="forceLogout" method="post" action="ibm_security_logout" name="logout_form">',
+    '<input type="hidden" name="logoutExitPage" VALUE="login.html">',
+    '<input type="submit" class="hidden btn btn-primary" name="logout" value="Logout">',
+    '</form>'
+  ].join('');
+
+  bootbox.alert(html,
+    function(result){
+    $("#forceLogout").submit();
+  });
+
+}
+
+$("#ulPrjFile").change(function(){
+  var fd = new FormData();
+
+  var file = $(this)[0].files[0];
+  // console.log(file);
+  // var fileName = file.name;
+
+  fd.append('file', file, file.name);
+  // console.log(fd);
+
+  $.ajax({
+    url: "UploadPrj",
+    type: "POST",
+    data: fd,
+    enctype: 'multipart/form-data',
+    // dataType: 'application/text',
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,   // tell jQuery not to set contentType
+		success: function(data) {
+      OpenProject(null, data.DATAS);
+      console.log(data);
+		},
+		error: function(data) {
+      console.log(data);
+		}
+  });
+
+  $(this).val('');  
+
+})
 
 $("#prjResource").change(function () {
     var selectedText = $(this).find("option:selected").val();
@@ -196,9 +341,18 @@ function NewProject() {
   });
 }
 
-function OpenProject(id) {
+function OpenProject(id, ulPrj) {
 
-  var prj = datas.PROJECTS[id];
+  var prj = {};
+
+  if(id == null){
+    prj = ulPrj
+  }
+  else{
+    prj = datas.PROJECTS[id];
+  }
+
+  console.log(prj);
 
   $.ajax({
     type: 'POST',

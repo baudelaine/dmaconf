@@ -29,7 +29,6 @@
 										<!-- <p> -->
 												<!-- <img src="img/logo.png" class="img-responsive"></img> -->
 												<img alt="data-accelerator.com" src="img/logo.png" height="50" style="vertical-align:bottom;margin:0px 0px">
-												<h6><span class="label label-primary">YOUR DATA YOUR WAY...</span></h6>
 												<!-- <span class="label label-primary">Consult less, report more...</span> -->
 
 										<!-- </p> -->
@@ -61,13 +60,17 @@
 											<div class="col-md-12">
 													<p>
 														<div class="list-group">
-								              <a href="#" id="new" class="list-group-item"><span>New project</span></a>
-								              <a href="#" id="open" class="list-group-item"><span>Open project</span></a>
-															<a href="#" id="setupDS" class="list-group-item disabled"><span>Setup Datasource</span></a>
+								              <a href="#" id="new" class="list-group-item"><span>Create a new project</span></a>
+								              <a href="#" id="open" class="list-group-item"><span>Open an existing project</span></a>
+								              <a href="#" id="ulPrj" class="list-group-item"><span>Upload a project</span></a>
+								              <a href="#" id="ulWks" class="list-group-item"><span>Upload a workspace</span></a>
 								            </div>
 													</p>
 											</div>
 									</div>
+									<input type="file" name="ulWksFile" id="ulWksFile" style="display: none;" accept=".zip">
+									<input type="file" name="ulPrjFile" id="ulPrjFile" style="display: none;" accept=".zip">
+				
 
 					 	</div>
 
@@ -140,6 +143,7 @@
 	<script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap-list-filter.min.js"></script>
   <script src="js/bootstrap-select.min.js"></script>
+  <script src="js/bootbox.min.js"></script>
 
   <script src="js/project.js"></script>
 
