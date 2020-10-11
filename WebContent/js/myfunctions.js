@@ -202,7 +202,7 @@ fieldCols.push({field:"icon", title: '<h4><span class="label label-default">Icon
   source: [{value: "Attribute", text: "Attribute"}, {value: "Identifier", text: "Identifier"}, {value: "Fact", text: "Fact"}]
   }
 });
-fieldCols.push({field:"displayType", title: '<h4><span class="label label-default">DisplayType</span>', editable:{
+fieldCols.push({field:"displayType", title: '<h4><span class="label label-default">Display Type</span>', editable:{
   type: "select",
   mode: "inline",
   value: "Value",
@@ -1922,8 +1922,12 @@ function aboveFormatter(value, row, index){
 
 function dimensionsFormatter (value, row, index) {
   if(row.dimensions.length > 0){
-    return row.dimensions[0].dimension + "...";
-  }
+    return [
+      '<a class="addRelation" href="javascript:void(0)" title="Edit Filters">',
+      '<i class="glyphicon glyphicon-zoom-in"></i>',
+      '</a>'
+    ].join('');
+}
   else{
     return '';
   }
