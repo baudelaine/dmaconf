@@ -401,6 +401,105 @@
 		</div>
 		<!-- modelList modal -->
 
+		<!-- modelList modal -->
+		<div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false" data-backdrop="static">
+			<div class="modal-dialog" role="document">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title" id="myModalLabel">About Project</h4>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group row">
+						  <label for="prjname" class="col-sm-2 col-form-label">Name</label>
+						  <div class="col-sm-10">
+							<input class="form-control" type="text" id="prjname" placeholder="" readonly>
+						  </div>
+						</div>
+						<div class="form-group row">
+							<label for="prjlanguages" class="col-sm-2 col-form-label">Main Language</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjlanguages" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjdescription" class="col-sm-2 col-form-label">Description</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjdescription" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjtimestamp" class="col-sm-2 col-form-label">Timestamp</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjtimestamp" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjrelationCount" class="col-sm-2 col-form-label">Relation Count</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjrelationCount" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjdbSchema" class="col-sm-2 col-form-label">DB Schema</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjdbSchema" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjjndiName" class="col-sm-2 col-form-label">JNDI Name</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjjndiName" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjdbName" class="col-sm-2 col-form-label">DB Name</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjdbName" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjdbEngine" class="col-sm-2 col-form-label">DB Engine</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjdbEngine" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjresdescription" class="col-sm-2 col-form-label">Resource Description</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjresdescription" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjcognosCatalog" class="col-sm-2 col-form-label">Cognos Catalog</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjcognosCatalog" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjcognosSchema" class="col-sm-2 col-form-label">Cognos Schema</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjcognosSchema" placeholder="" readonly>
+							</div>
+						  </div>
+						  <div class="form-group row">
+							<label for="prjcognosDataSource" class="col-sm-2 col-form-label">Cognos DataSource</label>
+							<div class="col-sm-10">
+							  <input class="form-control" type="text" id="prjcognosDataSource" placeholder="" readonly>
+							</div>
+						  </div>
+
+				  </form>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		  <!-- modelList modal -->
+  
 		<!-- projectFile modal -->
 		<div class="modal fade" id="modProjectFile" tabindex="-1" role="dialog" aria-labelledby="modProjectFileLabel" data-keyboard="false" data-backdrop="static">
 			<div class="modal-dialog" role="document">
@@ -444,6 +543,33 @@
 			</div>
 		</div>
 		<!-- projectFile modal -->
+
+		<!-- removeKeysModal modal -->
+		<div class="modal fade" id="removeModelsModal" tabindex="-1" role="dialog" aria-labelledby="removeKeysModalLabel" data-keyboard="false" data-backdrop="static">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="removeModelsModalLabel">Select model(s) available on server to be dropped :</h4>
+					</div>
+					<div class="modal-body">
+						<div class="container-fluid">
+							<div class="row">
+								<div class="form-group">
+									<select class="selectpicker" data-width="100%" id="modelsSelect" multiple data-actions-box="true" data-live-search="true" title="Choose model(s)..."></select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="dropModels">Drop</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- projectFile modal -->
+
 
 		<!-- logout modal -->
 	  <div class="modal fade" id="modLogout" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false" data-backdrop="static">
@@ -1106,11 +1232,11 @@
 					<ul class="dropdown-menu" id="mainMenu">
 						<li><a href="#" id="addFold">Add Folder</a></li>
 						<li><a href="#" id="removeFold">Remove Folder</a></li>
-						<li class="disabled"><a href="#" id="labelFold">Label Folder</a></li>
+						<!-- <li class="disabled"><a href="#" id="labelFold">Label Folder</a></li> -->
 						<li role="separator" class="divider"></li>
 						<li><a href="#" id="addDim">Add Dimension</a></li>
 						<li><a href="#" id="removeDim">Remove Dimension</a></li>
-						<li class="disabled"><a href="#" id="labelDim">Label Dimension</a></li>
+						<!-- <li class="disabled"><a href="#" id="labelDim">Label Dimension</a></li> -->
 						<li role="separator" class="divider"></li>
 						<li><a href="#" id="ulActionLog">Upload Action Log</a></li>
 						<li><a href="#" id="showActionLog">Show Action Log(s)</a></li>
@@ -1126,12 +1252,12 @@
 						<li><a href="#" id="rmWks">Remove Workspace</a></li>
 						<li role="separator" class="divider"></li>
 						<li><a href="#" id="testDBConnection">Test Database Connection</a></li>
-						<li class="disabled"><a href="#" id="testCognosConnection">Test Cognos Connection</a></li>
-						<li class="disabled"><a href="#" id="testModelDirConnection">Test Models Directory access</a></li>
+						<li><a href="#" id="testCognosConnection">Test Cognos Connection</a></li>
+						<li><a href="#" id="testModelDirConnection">Test Models Directory access</a></li>
 						<li role="separator" class="divider"></li>
 						<li id="liSearchTool"><a href="#" id="searchTool">Search Tool</a></li>
 						<li role="separator" class="divider"></li>
-						<li class="disabled"><a href="#" id="settings">Settings</a></li>
+						<li><a href="#" id="settings">About Project</a></li>
 						<li><a href="#" id="logout">Logout</a></li>
 
 					</ul>
@@ -1156,7 +1282,7 @@
 						<ul class="dropdown-menu" id="tablesMenu">
 							<li><a href="#" id="dlModel">Download Model</a></li>
 							<li><a href="#" id="ulModel">Upload Model</a></li>
-							<li class="disabled"><a href="#" id="rmModel">Remove Model</a></li>
+							<li><a href="#" id="rmModel">Remove Model(s)</a></li>
 						</ul>
 					</div>
 					<input type="file" name="ulModelFile" id="ulModelFile" style="display: none;" accept=".json">

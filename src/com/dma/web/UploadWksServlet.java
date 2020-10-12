@@ -25,6 +25,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.zeroturnaround.zip.ZipUtil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 /**
  * Servlet implementation class AppendSelectionsServlet
  */
@@ -79,11 +81,26 @@ public class UploadWksServlet extends HttpServlet {
 				List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
 				for (FileItem item : items) {
 					if (!item.isFormField()) {
-						Path zip = Paths.get(getServletContext().getRealPath("/datas") + "/workspace-" + user + ".zip");
+						Path zip = Paths.get("/tmp" + "/" + user + "-" + Tools.getCurrentTimestamp() + ".zip");
 						Files.copy(new BufferedInputStream(item.getInputStream()), zip, StandardCopyOption.REPLACE_EXISTING);
-						zip.toFile().setReadable(true, false);
-						zip.toFile().setWritable(true, false);
-						result.put("WRITING", zip.getFileName().toString());
+						
+						if(!ZipUtil.containsEntry(zip.toFile(), "projects.json")) {
+							result.put("STATUS", "KO");
+							throw new Exception("Archive is not valid. No projects.json found in it.");
+						}
+						
+						byte[] json = ZipUtil.unpackEntry(zip.toFile(), "projects.json");
+						
+						
+						try {
+							Tools.fromJSON(new ByteArrayInputStream(json), new TypeReference<Map<String, Project>>(){});
+						}
+						catch(Exception e) {
+							result.put("STATUS", "KO");
+							throw new Exception("Archive is not valid. projects.json is not a valid Project Map object.");
+						}
+						
+						
 						FileUtils.deleteDirectory(wks.toFile());
 						Files.createDirectory(wks);
 						wks.toFile().setExecutable(true, false);
@@ -91,6 +108,8 @@ public class UploadWksServlet extends HttpServlet {
 						wks.toFile().setWritable(true, false);
 						
 						ZipUtil.unpack(zip.toFile(), wks.toFile());
+						
+						Files.deleteIfExists(zip);
 					    
 					}
 					else {
