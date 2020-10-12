@@ -87,7 +87,7 @@ public class UploadPrjServlet extends HttpServlet {
 						
 						if(!ZipUtil.containsEntry(zip.toFile(), "project.json")) {
 							result.put("STATUS", "KO");
-							throw new Exception("Archive is not valid. No Project object found in it.");
+							throw new Exception("Archive is not valid. No project.json found in it.");
 						}
 						
 						Path projectsFile = Paths.get(wks + "/" + "projects.json");
@@ -97,7 +97,15 @@ public class UploadPrjServlet extends HttpServlet {
 							
 							byte[] json = ZipUtil.unpackEntry(zip.toFile(), "project.json");
 							
-							Project project =  (Project) Tools.fromJSON(new ByteArrayInputStream(json), new TypeReference<Project>(){});
+							Project project = null;
+							
+							try {
+								project =  (Project) Tools.fromJSON(new ByteArrayInputStream(json), new TypeReference<Project>(){});
+							}
+							catch(Exception e) {
+								result.put("STATUS", "KO");
+								throw new Exception("Archive is not valid. project.json is not a valid Project object.");
+							}
 							
 							String prjBackupName = project.getName();
 							

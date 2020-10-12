@@ -7334,12 +7334,17 @@ $("#ulPrjFile").change(function(){
     contentType: false,   // tell jQuery not to set contentType
 		success: function(data) {
       console.log(data);
-      showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
-      $('#DatasTable').bootstrapTable('load', []);
-      $('#ViewsTable').bootstrapTable('load', []);
-      var message = '<br><br>Then open project :' +
-      '<br><h3><span class="label label-primary">' + data.DATAS.name + '</span></h3>'      
-      forceLogout(message);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+        $('#DatasTable').bootstrapTable('load', []);
+        $('#ViewsTable').bootstrapTable('load', []);
+        var message = '<br><br>Then open project :' +
+        '<br><h3><span class="label label-primary">' + data.DATAS.name + '</span></h3>'      
+        forceLogout(message);
+      }
+      else{
+        showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom");
+      }
 		},
 		error: function(data) {
       console.log(data);
@@ -7351,6 +7356,180 @@ $("#ulPrjFile").change(function(){
 
 })
 
+$("#settings").click(function(){
+
+  $.ajax({
+		type: 'POST',
+		url: "GetCurrentProject",
+		dataType: 'json',
+
+		success: function(data) {
+      console.log(data);
+      var prj = data.data;
+      $("#settingModal").modal("toggle");
+
+      $("#prjname").val(prj.name);
+      $("#prjlanguages").val(prj.languages[0]);
+      $("#prjdbSchema").val(prj.dbSchema);
+      $("#prjdescription").val(prj.description);
+      $("#prjtimestamp").val(prj.timestamp);
+      $("#prjrelationCount").val(prj.relationCount);
+
+      $("#prjjndiName").val(prj.resource.jndiName);
+      $("#prjdbName").val(prj.resource.dbName);
+      $("#prjdbEngine").val(prj.resource.dbEngine);
+      $("#prjresdescription").val(prj.resource.description);
+      $("#prjcognosCatalog").val(prj.resource.cognosCatalog);
+      $("#prjcognosSchema").val(prj.resource.cognosSchema);
+      $("#prjcognosDataSource").val(prj.resource.cognosDataSource);
+		},
+		error: function(data) {
+      console.log(data);
+		}
+	});
+
+})
+
+$("#testModelDirConnection").click(function(){
+  $.ajax({
+    type: 'POST',
+    url: "TestCognosModelsPathWriteable",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+      }
+      else{
+        showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom");
+      }
+  },
+    error: function(data) {
+        console.log(data);
+        showalert("ERROR", "Unknown", "alert-danger", "bottom");
+    }
+
+  });
+})
+
+$("#dropModels").click(function(){
+
+  console.log($("#modelsSelect").val());
+
+  var list = '<ul class="list-group">';
+  $.each($("#modelsSelect").val(), function(i, mdl){
+    list += '<li class="list-group-item">' + mdl + '</li>';
+  });
+  list += '</ul>';
+
+
+  bootbox.confirm({
+    title: "Following models will be dropped :",
+    message: list,
+    buttons: {
+      cancel: {
+          label: 'Cancel',
+          className: 'btn btn-default'
+      },
+      confirm: {
+          label: 'Drop',
+          className: 'btn btn-primary'
+      }
+    },
+    callback: function(result){
+
+      if(!result){
+        return;
+      }
+
+      var parms = {"models": $("#modelsSelect").val()};
+      console.log(parms);
+      
+      $.ajax({
+          type: 'POST',
+          url: "DropModels",
+          dataType: 'json',
+          data: JSON.stringify(parms),
+  
+          success: function(data) {
+            console.log(data);
+            if(data.STATUS == "OK"){
+              showalert(data.FROM, data.MESSAGE, "alert-success", "bottom")
+            }
+            else{
+              showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom")
+            }
+          },
+          error: function(data) {
+              console.log(data);
+              showalert("DropModels", "an unknown error occured", "alert-danger", "bottom");
+          }
+  
+      });
+      $("#removeModelsModal").modal("toggle");
+    }
+  });
+
+
+})
+
+$("#rmModel").click(function(){
+
+  $.ajax({
+    type: 'POST',
+    url: "GetModelList",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      if(data.length > 0){
+        $("#removeModelsModal").modal("toggle");
+        $("#modelsSelect").selectpicker('deselectAll');
+        $("#modelsSelect").empty();
+        $.each(data, function(index, model){
+          var option = '<option class="fontsize" value="' + model.name + '">' + model.name + '</option>';
+          $("#modelsSelect").append(option);
+        })
+        $("#modelsSelect").selectpicker('refresh');
+      }
+      else{
+        showalert("GetModelList", "No model found on server", "alert-warning", "bottom");
+      }
+  },
+    error: function(data) {
+        console.log(data);
+        showalert("GetModelList", "an unknown occured", "alert-danger", "bottom");
+    }
+
+  });
+
+
+})
+
+$("#testCognosConnection").click(function(){
+  $.ajax({
+    type: 'POST',
+    url: "TestCognosConnection",
+    dataType: 'json',
+
+    success: function(data) {
+      console.log(data);
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+      }
+      else{
+        showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom");
+      }
+  },
+    error: function(data) {
+        console.log(data);
+        showalert("ERROR", "Unknown", "alert-danger", "bottom");
+    }
+
+  });
+
+})
 
 $("#ulWksFile").change(function(){
   var fd = new FormData();
@@ -7372,10 +7551,15 @@ $("#ulWksFile").change(function(){
     contentType: false,   // tell jQuery not to set contentType
 		success: function(data) {
       console.log(data);
-      showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
-      $('#DatasTable').bootstrapTable('load', []);
-      $('#ViewsTable').bootstrapTable('load', []);
-      forceLogout();
+      if(data.STATUS == "OK"){
+        showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+        $('#DatasTable').bootstrapTable('load', []);
+        $('#ViewsTable').bootstrapTable('load', []);
+        forceLogout();
+      }
+      else{
+        showalert(data.FROM, data.MESSAGE, "alert-warning", "bottom");
+      }
 		},
 		error: function(data) {
       console.log(data);

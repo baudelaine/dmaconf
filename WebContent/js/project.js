@@ -8,6 +8,18 @@ $(document)
   $('#dynamicModal').modal('toggle');
 })
 
+.on('hidden.bs.modal', '.modal', function () {
+  $('.modal:visible').length && $(document.body).addClass('modal-open');
+})
+.ajaxStart(function(){
+  // $("div#divLoading").addClass('show');
+  $("div#modDivLoading").addClass('show');
+})
+.ajaxStop(function(){
+  // $("div#divLoading").removeClass('show');
+  $("div#modDivLoading").removeClass('show');
+});
+
 // $('.modal').modal({
 //     backdrop: 'static',
 //     keyboard: false
@@ -160,10 +172,17 @@ $("#ulWksFile").change(function(){
     contentType: false,   // tell jQuery not to set contentType
 		success: function(data) {
       console.log(data);
-      forceLogout();
+      if(data.STATUS == "OK"){
+        ShowAlert(data.MESSAGE, "alert-success", $("#AlertModal"));
+        forceLogout();
+      }
+      else{
+        ShowAlert(data.MESSAGE, "alert-warning", $("#AlertModal"));
+      }
 		},
 		error: function(data) {
       console.log(data);
+      ShowAlert("Unknown error occured.", "alert-danger", $("#AlertModal"));
 		}
   });
 
@@ -209,11 +228,17 @@ $("#ulPrjFile").change(function(){
     processData: false,  // tell jQuery not to process the data
     contentType: false,   // tell jQuery not to set contentType
 		success: function(data) {
-      OpenProject(null, data.DATAS);
-      console.log(data);
+      if(data.STATUS == "OK"){
+        OpenProject(null, data.DATAS);
+        console.log(data);
+      }
+      else{
+        ShowAlert(data.MESSAGE, "alert-warning", $("#AlertModal"));
+      }
 		},
 		error: function(data) {
       console.log(data);
+      ShowAlert("Unknown error occured.", "alert-danger", $("#AlertModal"));
 		}
   });
 
@@ -403,7 +428,7 @@ function loadResources(obj, list){
 
 }
 
-function ShowAlert(message, alertType) {
+function ShowAlert(message, alertType, $el) {
 
     $('#alertmsg').remove();
 
@@ -413,7 +438,7 @@ function ShowAlert(message, alertType) {
       timeout = 5000;
     }
     if(alertType.match('alert-danger')){
-      timeout = 15000;
+      timeout = 1000;
     }
 
     var $newDiv;
@@ -440,7 +465,12 @@ function ShowAlert(message, alertType) {
        .addClass('alert ' + alertType + ' alert-dismissible');
     }
 
-    $('#Alert').append($newDiv);
+    if($el){
+      $el.append($newDiv);
+    }
+    else{
+      $('#Alert').append($newDiv);
+    }
 
     setTimeout(function() {
        $('#alertmsg').remove();
