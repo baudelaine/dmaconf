@@ -278,7 +278,7 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			
 	        //start();
 			String dBEngine = (String) request.getSession().getAttribute("dbEngine");
-			String cognosFolder = (String) request.getServletContext().getAttribute("cognosFolder");
+			String cognosFolder = (String) request.getServletContext().getAttribute("cognosFolder") + "/" + user;
 			String cognosDispatcher = (String) request.getServletContext().getAttribute("cognosDispatcher");
 			String cognosLogin = (String) request.getServletContext().getAttribute("cognosLogin");
 			String cognosPassword = (String) request.getServletContext().getAttribute("cognosPassword");
@@ -376,7 +376,7 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 					fsvc.createQuerySubject("PHYSICALUSED", "FINAL", "FINAL_" + query_subject.getValue().getTable_alias(), query_subject.getValue().getTable_alias());
 					//ajout filter
 					String filterNameSpaceSource = "[FINAL]";
-					if (!query_subject.getValue().getFilter().equals(""))
+/*					if (!query_subject.getValue().getFilter().equals(""))
 					{
 						fsvc.createQuerySubject("FINAL", "FILTER_FINAL", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
 						
@@ -402,8 +402,8 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 						fsvc.createQuerySubject("FILTER_FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
 						filterNameSpaceSource = "[FILTER_FINAL]";
 					} else {
-						fsvc.createQuerySubject("FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
-					}
+*/						fsvc.createQuerySubject("FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
+//					}
 					//end filter
 					//folder pour les qs Finaux
 					if(query_subject.getValue().getFolder()!=null && !query_subject.getValue().getFolder().equals("")) {
@@ -1119,7 +1119,7 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 				if (namespaceID.equals("Ref") || namespaceID.equals("Tra")) {
 				
 					//filtre
-					
+/*					
 				//	String filterReset = "";
 					if (!query_subjects.get(pkAlias + namespaceID).getFilter().equals(""))
 					{
@@ -1161,7 +1161,7 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 						filterNameSpaceSource = "[FILTER_" + namespaceName + "]";
 					}
 					//end filtre
-					
+*/					
 					String gFieldNameReorder;
 					if(qSleftType.equals("Final")) {
 						gFieldNameReorder = rel.getAbove();
