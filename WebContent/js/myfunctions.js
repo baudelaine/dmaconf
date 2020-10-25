@@ -2452,7 +2452,16 @@ function validNewRelation(){
 }
 
 function Search(){
-  window.open("search.html");
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      window.open("search.html");
+    }
+  }
+ 
 }
 
 function getSetFromArray(array){
@@ -4559,6 +4568,33 @@ function forceLogout(message){
 
 }
 
+
+function promptTeasing(){
+
+  bootbox.confirm({
+    title: "Feature is not available",
+    message: "Some features are available only when project is connected to a database.<br>Ask for more informations ?",
+    buttons: {
+      cancel: {
+          label: 'Cancel',
+          className: 'btn btn-default'
+      },
+      confirm: {
+          label: 'Ask',
+          className: 'btn btn-primary'
+      }
+    },
+    callback: function(result){
+      if(result){
+        console.log("ask was clicked...");
+        window.open("http://data-accelerator.com/contact/");
+      }
+    }
+  });                  
+
+
+}
+
 function promptPublish(){
 
   $datasTable.bootstrapTable("filterBy", {});
@@ -4620,8 +4656,6 @@ function Publish(projectName, applyActionLogs){
   "view": JSON.stringify(view)
   };
 
-  console.log(parms);
-
   $.ajax({
     type: 'POST',
     url: "SendQuerySubjects",
@@ -4633,6 +4667,25 @@ function Publish(projectName, applyActionLogs){
       console.log(data);
       if(data.STATUS == "OK"){
         showalert("Publish()", data.MESSAGE, "alert-success", "bottom");
+        parms = {"publishedModelName": projectName};
+        $.ajax({
+          type: 'POST',
+          url: "ZipPublishedModel",
+          dataType: 'json',
+          data: JSON.stringify(parms),
+      
+          success: function(data) {
+            // $('#DatasTable').bootstrapTable('load', data);
+            console.log(data);
+            if(data.STATUS == "OK"){
+              showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+            }
+          },
+          error: function(data) {
+            showalert("ERROR", "Uknown error occured.", "alert-danger", "bottom");
+          }
+        });
+      
       }
       else{
         showalert(data.ERROR, data.MESSAGE + ": " + data.AXISFAULT + "<br>" + data.TROUBLESHOOTING, "alert-danger");
@@ -5048,6 +5101,9 @@ function GetCurrentProject(){
     success: function(data) {
       currentProject = data.data;
       if(data.data){
+        if(data.USER){
+          $("#logout").text("Logout " + data.USER);
+        }
         var lang = data.data.languages[0];
         var dc = '<span class="lang-lg lang-lbl-full" lang="' + lang + '"></span>' ;
   			var option = '<option class="fontsize" value="' + lang + '" data-content=\'' + dc + '\'></option>';
@@ -5079,22 +5135,43 @@ function GetCurrentProject(){
                   table.selectpicker('refresh');
         
                 }
+                if(data.MESSAGE == "model.xml not found."){
+                  bootbox.confirm({
+                    title: data.MESSAGE,
+                    message: "Do you want to upload one ?",
+                    buttons: {
+                      cancel: {
+                          label: 'Cancel',
+                          className: 'btn btn-default'
+                      },
+                      confirm: {
+                          label: 'Upload',
+                          className: 'btn btn-primary'
+                      }
+                    },
+                    callback: function(result){
+                      if(result){
+                        $('#XMLFile').trigger('click');
+                      }
+                    }
+                  });                  
+                }
             },
             error: function(data) {
               console.log(data);
             }
           });
 
-          $("#liSetHidden").addClass('disabled');
-          $("#setHidden").unbind('click');
-          $("#liRefreshTableDBMD").addClass('disabled');
-          $("#refreshTableDBMD").unbind('click');
-          $("#liAddSqlRel").addClass('disabled');
-          $("#addSqlRel").unbind('click');
-          $("#liSearchTool").addClass('disabled');
-          $("#searchTool").unbind('click');
-          $("#liSaveRel").addClass('disabled');
-          $("#saveRel").unbind('click');
+          // $("#liSetHidden").addClass('disabled');
+          // $("#setHidden").unbind('click');
+          // $("#liRefreshTableDBMD").addClass('disabled');
+          // $("#refreshTableDBMD").unbind('click');
+          // $("#liAddSqlRel").addClass('disabled');
+          // $("#addSqlRel").unbind('click');
+          // $("#liSearchTool").addClass('disabled');
+          // $("#searchTool").unbind('click');
+          // $("#liSaveRel").addClass('disabled');
+          // $("#saveRel").unbind('click');
 
         }
 
@@ -5717,7 +5794,15 @@ $("#logout").click(function(){
 
 
 $("#testDBConnection").click(function(){
-  TestDBConnection();
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      TestDBConnection();
+    }
+  }
 })
 
 $("#searchTool").click(function(){
@@ -5973,35 +6058,44 @@ $("#updateModel").click(function(){
 
 
 $('#setHiddenINL').click(function(){
-  var table = $("#qsSelect").find("option:selected").val();
-  var lang = $("#langSelect").find("option:selected").val();
-  console.log(table);
-  console.log(lang);
-  if(!table == ""){
 
-    var qsId = $("#qsSelect").find("option:selected").text();
-    var qss = $datasTable.bootstrapTable('getData');
-    var qs;
-    var index;
-    $.each(qss, function(i, o){
-      if(o._id.match(qsId)){
-        qs = o;
-        index = i;
-        console.log(qs);
-        $.each(qs.fields, function(j, field){
-          if(!field.labels[lang]){
-            field.hidden = true;
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      var table = $("#qsSelect").find("option:selected").val();
+      var lang = $("#langSelect").find("option:selected").val();
+      console.log(table);
+      console.log(lang);
+      if(!table == ""){
+    
+        var qsId = $("#qsSelect").find("option:selected").text();
+        var qss = $datasTable.bootstrapTable('getData');
+        var qs;
+        var index;
+        $.each(qss, function(i, o){
+          if(o._id.match(qsId)){
+            qs = o;
+            index = i;
+            console.log(qs);
+            $.each(qs.fields, function(j, field){
+              if(!field.labels[lang]){
+                field.hidden = true;
+              }
+            })
           }
         })
+        $refTab.tab('show');
+        $qsTab.tab('show');
+        $datasTable.bootstrapTable('expandRow', index);
+    
       }
-    })
-    $refTab.tab('show');
-    $qsTab.tab('show');
-    $datasTable.bootstrapTable('expandRow', index);
-
-  }
-  else{
-    showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
+      else{
+        showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
+      }
+    }
   }
 })
 
@@ -6022,31 +6116,39 @@ function saveHiddenQuery(){
 }
 
 $("#setHidden").click(function(){
-  // var qsId = $("#qsSelect").find("option:selected").text();
-  var qsId = $("#qsSelect").val();
-  console.log(qsId);
-  if(qsId){
-    $("#hiddenQueryModal").modal("toggle");
-    $("#hiddenQueryModalLabel").text("SQL queries for hidden" + " - " + qsId);
-    var qsId = $("#qsSelect").find("option:selected").text();
-    var qss = $datasTable.bootstrapTable('getData');
-    var qs;
-    $.each(qss, function(i, o){
-      if(o._id.match(qsId)){
-        qs = o;
-        return false;
+
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      // var qsId = $("#qsSelect").find("option:selected").text();
+      var qsId = $("#qsSelect").val();
+      console.log(qsId);
+      if(qsId){
+        $("#hiddenQueryModal").modal("toggle");
+        $("#hiddenQueryModalLabel").text("SQL queries for hidden" + " - " + qsId);
+        var qsId = $("#qsSelect").find("option:selected").text();
+        var qss = $datasTable.bootstrapTable('getData');
+        var qs;
+        $.each(qss, function(i, o){
+          if(o._id.match(qsId)){
+            qs = o;
+            return false;
+          }
+        })
+      
+        $("#hiddenQuery").val(qs.hiddenQuery);
+
       }
-    })
-  
-    $("#hiddenQuery").val(qs.hiddenQuery);
+      else{
+        showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
+      }
 
-  }
-  else{
-    showalert("No Query Subject selected.", "Select a Query Subject first.", "alert-warning", "bottom");
-  }
-
-  console.log(currentProject);
-
+      console.log(currentProject);
+    }
+  }  
 })
 
 function setHidden(){
@@ -6340,11 +6442,27 @@ $("#addTableAlias").click(function(){
 })
 
 $("#sortTables").click(function(){
-  SortOnStats();
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      SortOnStats();
+    }
+  }
 })
 
 $("#refreshTableDBMD").click(function(){
-  ChooseTable($tableList);
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      ChooseTable($tableList);
+    }
+  }
 })
 
 $("#expandQS").click(function(){
@@ -6668,7 +6786,15 @@ $('#queryModal').on('hidden.bs.modal', function() {
 // START
 
 $("#addSqlLabel").click(function(){
-  $('#queryModal').modal('toggle');
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      $('#queryModal').modal('toggle');
+    }
+  }  
 })
 
 $("#addCsvLabel").click(function(){
@@ -7149,7 +7275,15 @@ function UploadCSV($el, fileName, $table){
 
 
 $("#addSqlRel").click(function(){
-  $('#relsQueryModal').modal('toggle');
+  if(currentProject){
+    console.log(currentProject.resource.jndiName);
+    if(currentProject.resource.jndiName == "XML"){
+      promptTeasing();  
+    }
+    else{
+      $('#relsQueryModal').modal('toggle');
+    }
+  }
 })
 
 $("#ulWks").click(function(){

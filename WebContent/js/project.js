@@ -354,7 +354,7 @@ function NewProject() {
     success: function(data) {
       console.log(data);
       if(data.STATUS == "KO"){
-        ShowAlert(data.REASON, 'alert-danger');
+        ShowAlert(data.REASON, 'alert-warning');
       }
       if(data.STATUS == "OK"){
         window.location.replace("index.html");

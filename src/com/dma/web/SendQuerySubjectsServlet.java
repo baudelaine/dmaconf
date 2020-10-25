@@ -89,6 +89,9 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 		
 		try{
 		
+			String user = request.getUserPrincipal().getName();
+			result.put("USER", user);			
+			
 			Map<String, Object> parms = Tools.fromJSON(request.getInputStream());
 			
 			String projectName = (String) parms.get("projectName");
@@ -96,7 +99,7 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			String view = (String) parms.get("view");
 //			boolean applyActionLogs = Boolean.parseBoolean((String) parms.get("applyActionLogs"));
 			boolean applyActionLogs = (boolean) parms.get("applyActionLogs");
-			System.out.println("applyActionLogs=" + applyActionLogs);
+//			System.out.println("applyActionLogs=" + applyActionLogs);
 			
 			ObjectMapper mapper = new ObjectMapper();
 	        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -129,20 +132,15 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			
 			// START SETUP COGNOS ENVIRONMENT
 
-			Set<PosixFilePermission> perms = new HashSet<>();
-		    perms.add(PosixFilePermission.OWNER_READ);
-		    perms.add(PosixFilePermission.OWNER_WRITE);
-		    perms.add(PosixFilePermission.OWNER_EXECUTE);
-	
-		    perms.add(PosixFilePermission.OTHERS_READ);
-		    perms.add(PosixFilePermission.OTHERS_WRITE);
-		    perms.add(PosixFilePermission.OTHERS_EXECUTE);
-	
-		    perms.add(PosixFilePermission.GROUP_READ);
-		    perms.add(PosixFilePermission.GROUP_WRITE);
-		    perms.add(PosixFilePermission.GROUP_EXECUTE);		
+			Path cognosModelsPath = Paths.get((String) request.getServletContext().getAttribute("cognosModelsPath") + "/" + user);
 			
-			Path cognosModelsPath = Paths.get((String) request.getServletContext().getAttribute("cognosModelsPath"));
+			if(!Files.exists(cognosModelsPath)) {
+				Files.createDirectories(cognosModelsPath);
+				cognosModelsPath.toFile().setExecutable(true, false);
+				cognosModelsPath.toFile().setWritable(true, false);
+				cognosModelsPath.toFile().setReadable(true, false);
+			}
+			
 			Path projectPath = null;
 			if(!Files.isWritable(cognosModelsPath)){
 				result.put("STATUS", "KO");
@@ -165,7 +163,9 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 		
 				
 				Files.createDirectories(projectPath);
-				Files.setPosixFilePermissions(projectPath, perms);
+				projectPath.toFile().setExecutable(true, false);
+				projectPath.toFile().setWritable(true, false);
+				projectPath.toFile().setReadable(true, false);
 			}
 			
 
@@ -236,7 +236,9 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 			try {
 				DirectoryStream<Path> ds = Files.newDirectoryStream(projectPath);
 				for(Path path: ds){
-					Files.setPosixFilePermissions(path, perms);
+					path.toFile().setExecutable(true, false);
+					path.toFile().setWritable(true, false);
+					path.toFile().setReadable(true, false);
 				}
 			}
 			catch (IOException e) {

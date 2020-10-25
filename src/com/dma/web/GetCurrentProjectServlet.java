@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Servlet implementation class GetImportedKeysServlet
  */
@@ -36,6 +34,9 @@ public class GetCurrentProjectServlet extends HttpServlet {
 		Map<String, Object> result = new HashMap<String, Object>();
 
 		try{
+			
+			String user = request.getUserPrincipal().getName();
+			result.put("USER", user);			
 			
 			Project project = (Project) request.getSession().getAttribute("currentProject");
 			result.put("status", "OK");
