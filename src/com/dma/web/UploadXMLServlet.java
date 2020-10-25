@@ -182,6 +182,7 @@ public class UploadXMLServlet extends HttpServlet {
 					Files.write(relationsPath, header);
 					Files.write(relationsPath, relations, StandardOpenOption.APPEND);
 					relationsPath.toFile().setReadable(true, false);
+					result.put("MESSAGE", "model.xml uploaded successfully.");
 					result.put("STATUS", "OK");
 					
 				}

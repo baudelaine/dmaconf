@@ -5775,6 +5775,7 @@ $('#XMLFile').change(function(){
             table.append(option);
           });
           table.selectpicker('refresh');
+          showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
 
 
         }
