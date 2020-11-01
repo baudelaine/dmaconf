@@ -376,35 +376,28 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 					fsvc.createQuerySubject("PHYSICALUSED", "FINAL", "FINAL_" + query_subject.getValue().getTable_alias(), query_subject.getValue().getTable_alias());
 					//ajout filter
 					String filterNameSpaceSource = "[FINAL]";
-/*					if (!query_subject.getValue().getFilter().equals(""))
+					if (query_subject.getValue().getFilters()!=null && !query_subject.getValue().getFilters().isEmpty())
 					{
 						fsvc.createQuerySubject("FINAL", "FILTER_FINAL", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
 						
-						//split filter
-						String filterArea = query_subject.getValue().getFilter();
-						String allClauses[] = StringUtils.split(filterArea, ";");
-						for (int y=0; y < allClauses.length; y++) {
+						Map<String, Filter> qsFilters = query_subject.getValue().getFilters();
+						int y = 0;
+						for(Entry<String, Filter> f: qsFilters.entrySet()){
 							
-							String filterExp = "";
 							String option = "always";
-							if (allClauses[y].startsWith("(M)") || allClauses[y].startsWith("(F)")) {
-								if (allClauses[y].startsWith("(F)")) {
-									option = "asNeeded";
-								}
-								filterExp = allClauses[y].substring(3);
-							} else {
-								filterExp = allClauses[y];
+							if (f.getValue().getOption().equals("Facultative")) {
+								option = "asNeeded";
 							}
-							
-							fsvc.createQuerySubjectFilter("[FILTER_FINAL].[" + query_subject.getValue().getTable_alias() + "]" , filterExp, "New filter" + y, option, y);
+							fsvc.createQuerySubjectFilter("[FILTER_FINAL].[" + query_subject.getValue().getTable_alias() + "]" , f.getValue().getExpression(), f.getValue().getName(), option, y);
+							y++;
 						}
 
 						fsvc.createQuerySubject("FILTER_FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
 						filterNameSpaceSource = "[FILTER_FINAL]";
 					} else {
-*/						fsvc.createQuerySubject("FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
-//					}
-					//end filter
+						fsvc.createQuerySubject("FINAL", "DATA", query_subject.getValue().getTable_alias() , query_subject.getValue().getTable_alias());
+					}
+					//end filter					//end filter
 					//folder pour les qs Finaux
 					if(query_subject.getValue().getFolder()!=null && !query_subject.getValue().getFolder().equals("")) {
 						
@@ -1119,49 +1112,43 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 				if (namespaceID.equals("Ref") || namespaceID.equals("Tra")) {
 				
 					//filtre
-/*					
+					
 				//	String filterReset = "";
-					if (!query_subjects.get(pkAlias + namespaceID).getFilter().equals(""))
+					if (query_subjects.get(pkAlias + namespaceID).getFilters()!=null && !query_subjects.get(pkAlias + namespaceID).getFilters().isEmpty())
 					{
-						//traitement language filter DMA -> Separé par ; = diffrentes clauses pour ce QSRef
-						//séparé par :  Partie 0 du tableau = emplacement QS, Partie 1 = clause filtre
 						
 						fsvc.createQuerySubject(namespaceName, "FILTER_" + namespaceName, qsFinalName + gDirNameCurrent, qsFinalName + gDirNameCurrent);
 						
-						String filterArea = query_subjects.get(pkAlias + namespaceID).getFilter();
-						String allClauses[] = StringUtils.split(filterArea, ";");
 						
-						int numFilter = 0;
-						for (int y=0; y < allClauses.length; y++) {
-							if(allClauses[y].contains(":")) {
-								String pathFilter[] = StringUtils.split(allClauses[y], ":");
-								String pathRefQs = pathFilter[0].trim();
+						Map<String, Filter> qsFilters = query_subjects.get(pkAlias + namespaceID).getFilters();
+							
+						int z = 0;
+						for(Entry<String, Filter> f: qsFilters.entrySet()){
+							
+							if (f.getValue().getTarget().equals("[" + namespaceName + "].[" + qsFinalName + gDirNameCurrent + "]") || f.getValue().getTarget().equals("*")) {
+								String pathRefQs = "[FILTER_" + namespaceName + "].[" + qsFinalName + gDirNameCurrent + "]";
+								String name = f.getValue().getName();
 								String option = "always";
-								if (pathRefQs.startsWith("(")) {
-									if (pathRefQs.startsWith("(F)")) {
-										option = "asNeeded";
+								if (f.getValue().getOption().equals("Facultative")) {
+									option = "asNeeded";
+								}
+								String exp = f.getValue().getExpression();
+								if (f.getValue().getTarget().equals("*")) {
+									if (exp.contains("*")) {
+										exp = StringUtils.replace(exp, "*", "[" + namespaceName + "].[" + qsFinalName + gDirNameCurrent + "]");
 									}
-									pathRefQs = pathRefQs.substring(3);
+									name = name + z;
 								}
-								String filterRefQs = pathFilter[1];
-								if (pathRefQs.equals("[REF].[" + qsFinalName + gDirNameCurrent + "]")) {								
-									pathRefQs = StringUtils.replace(pathRefQs, "[REF].", "[FILTER_REF].");
-									fsvc.createQuerySubjectFilter(pathRefQs , filterRefQs, "New filter" + y, option, y);
-									numFilter = numFilter + 1;
-								} else if (pathRefQs.equals("*")) {
-									pathRefQs = "[REF].[" + qsFinalName + gDirNameCurrent + "]";
-									pathRefQs = StringUtils.replace(pathRefQs, "[REF].", "[FILTER_REF].");
-									filterRefQs = StringUtils.replace(filterRefQs, "*", "[REF].[" + qsFinalName + gDirNameCurrent + "]");
-									fsvc.createQuerySubjectFilter(pathRefQs , filterRefQs, "New filter" + y, option, y);
-									numFilter = numFilter + 1;
-								}
+							
+								fsvc.createQuerySubjectFilter(pathRefQs , exp, name, option, z);
+								z++;
 							}
 						}
-						
+
 						filterNameSpaceSource = "[FILTER_" + namespaceName + "]";
 					}
 					//end filtre
-*/					
+
 					String gFieldNameReorder;
 					if(qSleftType.equals("Final")) {
 						gFieldNameReorder = rel.getAbove();
