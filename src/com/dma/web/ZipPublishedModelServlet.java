@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.zeroturnaround.zip.NameMapper;
 import org.zeroturnaround.zip.ZipUtil;
 
 /**
@@ -78,7 +79,11 @@ public class ZipPublishedModelServlet extends HttpServlet {
 				Path zip = Paths.get(dlDir + "/" + user + "-" + publishedModelName + ".zip");
 				
 				if(dir.exists()){
-					ZipUtil.pack(dir, zip.toFile());		
+					ZipUtil.pack(dir, zip.toFile(), new NameMapper() {
+						public String map(String name) {
+							return publishedModelName + "/" + name;
+						}
+					});		
 				}
 
 				if(Files.exists(zip)) {
@@ -87,6 +92,7 @@ public class ZipPublishedModelServlet extends HttpServlet {
 					zip.toFile().setExecutable(true, false);
 					result.put("MESSAGE", zip.toString() + " will be downloaded.");
 					result.put("FILENAME", zip.toString());
+					request.getServletContext().setAttribute("publishedModelPath", zip);
 				}
 				else {
 					result.put("STATUS", "KO");

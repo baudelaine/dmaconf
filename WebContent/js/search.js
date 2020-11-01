@@ -83,7 +83,7 @@ $('#dynamicModal').on('shown.bs.modal', function(){
       success: function(data) {
         console.log(data);
         if(Object.keys(data).length > 0){
-          tables = Object.values(data);
+          tables = Object.values(data.DATAS);
           console.log(tables);
           $.each(tables, function(i, obj){
             list += '<a href="#" id="' + obj.table_name +'" class="list-group-item"><span>' + obj.table_name + ' - ' + obj.table_remarks + ' - ' + obj.table_stats + '</span></a>';

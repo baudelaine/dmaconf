@@ -4679,6 +4679,7 @@ function Publish(projectName, applyActionLogs){
             console.log(data);
             if(data.STATUS == "OK"){
               showalert(data.FROM, data.MESSAGE, "alert-success", "bottom");
+              window.location.href = "DLPublishedModel";
             }
           },
           error: function(data) {
