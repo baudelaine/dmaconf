@@ -148,14 +148,23 @@ public class GetFieldsServlet extends HttpServlet {
 			    			DBMDColumn dbmdColumn = dbmdColumns.get(field_name);
 			    			if(dbmdColumns != null){
 			    				String label = "";
-			    				if(dbmdColumn.getColumn_remarks() != null) {
-			    					label = dbmdColumn.getColumn_remarks();
+			    				try {
+				    				if(dbmdColumn.getColumn_remarks() != null) {
+				    					label = dbmdColumn.getColumn_remarks();
+				    				}
 			    				}
+			    				catch (NullPointerException e) {
+			    				}
+			    				
 				    			field.setLabel(label);
 				    			String desc = "";
-				    			if(dbmdColumn.getColumn_description() != null) {
-				    				desc = dbmdColumn.getColumn_description();
-				    			}
+				    			try {
+					    			if(dbmdColumn.getColumn_description() != null) {
+					    				desc = dbmdColumn.getColumn_description();
+					    			}
+			    				}
+			    				catch (NullPointerException e) {
+			    				}
 				    			field.setDescription(desc);
 				           		if(!language.isEmpty()) {
 				        			field.getLabels().put(language, label);
