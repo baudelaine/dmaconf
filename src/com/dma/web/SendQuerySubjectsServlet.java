@@ -1190,7 +1190,9 @@ public class SendQuerySubjectsServlet extends HttpServlet {
 						if (rel.isRef()) {
 							if (field.isCustom()) {
 								
-								fsvc.createQueryItemInFolder(qsFinal, gDirNameCurrent, gFieldName + "." + field.getField_name(), field.getExpression());
+								String exp = field.getExpression();
+								exp = StringUtils.replace(exp, "*", filterNameSpaceSource + ".[" + qsFinalName + gDirNameCurrent +"]");
+								fsvc.createQueryItemInFolder(qsFinal, gDirNameCurrent, gFieldName + "." + field.getField_name(), exp);
 						
 							} else {
 							fsvc.createQueryItemInFolder(qsFinal, gDirNameCurrent, gFieldName + "." + field.getField_name(), filterNameSpaceSource + ".[" + qsFinalName + gDirNameCurrent +"].[" + field.getField_name() + "]");
