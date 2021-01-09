@@ -10,8 +10,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
@@ -96,6 +98,7 @@ public class UpdateModelServlet extends HttpServlet {
 				}				
 
 				Map<String, List<Field>> newFields = new HashMap<String, List<Field>>();
+				Map<String, List<Field>> fieldsToRemove = new HashMap<String, List<Field>>();
 				
 				if(isXML) {
 					@SuppressWarnings("unchecked")
@@ -131,6 +134,7 @@ public class UpdateModelServlet extends HttpServlet {
 				}
 				else {
 
+					// Add fields in QS if new in DB table
 					Connection con = (Connection) request.getSession().getAttribute("con");
 					String schema = (String) request.getSession().getAttribute("schema");
 					
@@ -174,6 +178,50 @@ public class UpdateModelServlet extends HttpServlet {
 				    
 				    rstTables.close();
 				    
+				    // Remove fields from QS if no longer exists in DB table and not custom
+				    // set tableExists to true in QS  if DB table no longer exists
+				    
+					Map<String, Set<String>> fldMap = new HashMap<String, Set<String>>();
+					Set<String> tblSet = new HashSet<String>();
+					
+					for(QuerySubject qs: model) {
+						String table = qs.getTable_name();
+						tblSet.add(table);
+					}
+				    
+					for(String tbl: tblSet) {
+						
+						ResultSet rstFields = metaData.getColumns(con.getCatalog(), schema, tbl, "%");
+						Set<String> fldSet = new HashSet<String>();
+						while(rstFields.next()){
+							fldSet.add(rstFields.getString("COLUMN_NAME"));
+						}
+						rstFields.close();
+						if(fldSet.size() > 0) {
+							fldMap.put(tbl, fldSet);
+						}
+					}
+				    
+					for(QuerySubject qs: model) {
+						if(!tblSet.contains(qs.getTable_name())) {
+//							System.out.println(qs.getTable_name() + " does not exists");
+							qs.setTableExists(false);
+						}
+						else {
+							Set<String> fldSet = fldMap.get(qs.getTable_name());
+							List<Field> fldToRemove = new ArrayList<Field>();
+							for(Field fld: qs.getFields()) {
+								if(!fldSet.contains(fld.getField_name())) {
+//									System.out.println(qs.getTable_name() + "." + fld.getField_name() + " does not exists");
+									if(!fld.isCustom()) {
+										fldToRemove.add(fld);
+									}
+								}
+							}
+							fieldsToRemove.put(qs.getTable_name(), fldToRemove);
+							
+						}
+					}
 					
 				}
 				
@@ -184,6 +232,10 @@ public class UpdateModelServlet extends HttpServlet {
 					if(newFields.containsKey(table)) {
 						datas.put(qs.get_id(), newFields.get(table));
 						qs.getFields().addAll(newFields.get(table));
+					}
+					if(fieldsToRemove.containsKey(table)) {
+						List<Field> fldsToRemove = fieldsToRemove.get(qs.getTable_name());
+						qs.getFields().removeAll(fldsToRemove);
 					}
 				}
 				

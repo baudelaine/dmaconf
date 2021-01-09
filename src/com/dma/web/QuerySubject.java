@@ -32,6 +32,7 @@ public class QuerySubject {
 	String merge = "";
 	Map<String, Filter> filters = new HashMap<String, Filter>(); 
 	String hiddenQuery = "";
+	boolean tableExists = true;
 	
 	
 	public String getFolder() {
@@ -195,6 +196,12 @@ public class QuerySubject {
 	}
 	public void setHiddenQuery(String hiddenQuery) {
 		this.hiddenQuery = hiddenQuery;
+	}
+	public boolean isTableExists() {
+		return tableExists;
+	}
+	public void setTableExists(boolean tableExists) {
+		this.tableExists = tableExists;
 	}
 	
 }

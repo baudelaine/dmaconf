@@ -4830,6 +4830,10 @@ function initGlobals(){
 
   var qss = $datasTable.bootstrapTable("getData");
 
+  if(qss.length == 0){
+    return;
+  }
+
   var folderSet = new Set();
   var dimensionSet = new Set();
 
@@ -7832,9 +7836,9 @@ $("#ulModelFile").change(function(){
 		success: function(data) {
     console.log(data);
       if(data.STATUS == "OK"){
-        if(data.DATAS.qss){
-          console.log(data.DATAS.qss);
-          $datasTable.bootstrapTable("load", data.DATAS.qss);
+        if(data.DATAS.querySubjects){
+          console.log(data.DATAS.querySubjects);
+          $datasTable.bootstrapTable("load", data.DATAS.querySubjects);
         }
         if(data.DATAS.views){
           $("#viewTab").removeClass('disabled');
@@ -7845,13 +7849,13 @@ $("#ulModelFile").change(function(){
         initGlobals();
         $finTab.tab('show');
         $qsTab.tab('show');
-        if(data.DATAS.qss){
-          var langs = Object.keys(data.DATAS.qss[0].labels);
+        if(data.DATAS.querySubjects){
+          var langs = Object.keys(data.DATAS.querySubjects[0].labels);
+          console.log(langs[0]);
+          $("#langSelect").selectpicker('val', langs[0]);
+          $("#langSelect").selectpicker('refresh');
+          SetLanguage(langs[0]);
         }
-        console.log(langs[0]);
-        $("#langSelect").selectpicker('val', langs[0]);
-        $("#langSelect").selectpicker('refresh');
-        SetLanguage(langs[0]);
 
         $("#qsSelect").empty();
         $.each($datasTable.bootstrapTable("getData"), function(i, data){
@@ -7875,6 +7879,11 @@ $("#ulModelFile").change(function(){
 
 
 $("#ulModel").click(function(){
+
+  if($datasTable.bootstrapTable("getData").length == 0){
+    $("#ulModelFile").trigger('click');
+    return;
+  }
 
   var message = [
     '<span style="font-size: 25px" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>',
