@@ -218,7 +218,7 @@ public class UpdateModelServlet extends HttpServlet {
 									}
 								}
 							}
-							fieldsToRemove.put(qs.getTable_name(), fldToRemove);
+							fieldsToRemove.put(qs.get_id(), fldToRemove);
 							
 						}
 					}
@@ -233,13 +233,14 @@ public class UpdateModelServlet extends HttpServlet {
 						datas.put(qs.get_id(), newFields.get(table));
 						qs.getFields().addAll(newFields.get(table));
 					}
-					if(fieldsToRemove.containsKey(table)) {
-						List<Field> fldsToRemove = fieldsToRemove.get(qs.getTable_name());
+					if(fieldsToRemove.containsKey(qs.get_id())) {
+						List<Field> fldsToRemove = fieldsToRemove.get(qs.get_id());
 						qs.getFields().removeAll(fldsToRemove);
 					}
 				}
 				
 				result.put("MODEL", model);
+				result.put("REMOVED", fieldsToRemove);
 				result.put("DATAS", datas);
 				result.put("STATUS", "OK");
 			}

@@ -15,7 +15,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-public class Test24 {
+public class Test26 {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
@@ -36,7 +36,7 @@ public class Test24 {
 		
 		System.out.println(qss.size());
 		
-		Map<String, Set<String>> fldMap = new HashMap<String, Set<String>>();
+		Map<String, List<String>> fldMap = new HashMap<String, List<String>>();
 		Set<String> tblSet = new HashSet<String>();
 		
 		for(QuerySubject qs: qss) {
@@ -56,7 +56,7 @@ public class Test24 {
 		for(String tbl: tblSet) {
 			
 			ResultSet rstFields = metaData.getColumns(con.getCatalog(), schema, tbl, "%");
-			Set<String> fldSet = new HashSet<String>();
+			List<String> fldSet = new ArrayList<String>();
 			while(rstFields.next()){
 				fldSet.add(rstFields.getString("COLUMN_NAME"));
 			}
@@ -76,7 +76,7 @@ public class Test24 {
 				qs.setTableExists(false);
 			}
 			else {
-				Set<String> fldSet = fldMap.get(qs.getTable_name());
+				List<String> fldSet = fldMap.get(qs.getTable_name());
 				List<Field> fldToRemove = new ArrayList<Field>();
 				for(Field fld: qs.getFields()) {
 					if(!fldSet.contains(fld.getField_name())) {
@@ -86,17 +86,17 @@ public class Test24 {
 						}
 					}
 				}
-				toRemoveMap.put(qs.getTable_name(), fldToRemove);
+				toRemoveMap.put(qs.get_id(), fldToRemove);
 				
 			}
 		}
 		
-		System.out.println(Tools.toJSON(toRemoveMap));
+		System.out.println("*******" + toRemoveMap.size());
 		
 		
 		for(QuerySubject qs: qss) {
-			if(toRemoveMap.containsKey(qs.getTable_name())) {
-				List<Field> fldsToRemove = toRemoveMap.get(qs.getTable_name());
+			if(toRemoveMap.containsKey(qs.get_id())) {
+				List<Field> fldsToRemove = toRemoveMap.get(qs.get_id());
 				qs.getFields().removeAll(fldsToRemove);
 			}
 			System.out.println(qs._id + " size = " + qs.getFields().size());
