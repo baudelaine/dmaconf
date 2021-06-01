@@ -83,7 +83,7 @@ public class GetDatabaseMetaDatasServlet extends HttpServlet {
 				
 			    DatabaseMetaData metaData = con.getMetaData();
 			    //String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
-			    String[] types = {"TABLE"};
+			    String[] types = {"VIEW"};
 			    ResultSet rst0 = metaData.getTables(con.getCatalog(), schema, "%", types);	
 	
 			    
