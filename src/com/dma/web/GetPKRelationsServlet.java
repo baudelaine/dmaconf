@@ -18,6 +18,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -184,7 +185,27 @@ public class GetPKRelationsServlet extends HttpServlet {
 		        	ResultSet rst0 = null;
 		        	if(importLabel && qsFromXML == null) {
 		        	
-			        	String[] types = {"TABLE"};
+//					    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+					    String[] types = {"TABLE"}; 
+					    		
+					    if(project != null) {
+						    String tableTypes = project.getResource().getTableTypes();
+						    List<String> typesList = new ArrayList<String>();
+						    switch(tableTypes.toUpperCase()) {
+						    	case "TABLE":
+						    		typesList.add("TABLE");
+						    		break;
+						    	case "VIEW":
+						    		typesList.add("VIEW");
+						    		break;
+						    	case "BOTH":
+						    		typesList.add("TABLE");
+						    		typesList.add("VIEW");
+						    		break;
+						    }
+						    types = typesList.stream().toArray(String[]::new);
+					    }			        	
+			        	
 			        	rst0 = metaData.getTables(con.getCatalog(), schema, fktable_name, types);
 			    		String label = "";
 			    		String desc = "";

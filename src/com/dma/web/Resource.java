@@ -9,6 +9,7 @@ public class Resource {
 	String cognosCatalog = "";
 	String cognosSchema = "";
 	String cognosDataSource = "";
+	String tableTypes = "";
 
 	public String getJndiName() {
 		return jndiName;
@@ -51,6 +52,12 @@ public class Resource {
 	}
 	public void setCognosDataSource(String cognosDataSource) {
 		this.cognosDataSource = cognosDataSource;
+	}
+	public String getTableTypes() {
+		return tableTypes;
+	}
+	public void setTableTypes(String tableTypes) {
+		this.tableTypes = tableTypes;
 	}
 	
 }

@@ -8,7 +8,9 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -87,11 +89,29 @@ public class GetNewRelationServlet extends HttpServlet {
 					
 					con = (Connection) request.getSession().getAttribute("con");
 					schema = (String) request.getSession().getAttribute("schema");
-					
-					
-			        
-		        	String[] types = {"TABLE"};
 		        	metaData = con.getMetaData();
+		        	
+//				    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+				    String[] types = {"TABLE"}; 
+				    		
+				    if(project != null) {
+					    String tableTypes = project.getResource().getTableTypes();
+					    List<String> typesList = new ArrayList<String>();
+					    switch(tableTypes.toUpperCase()) {
+					    	case "TABLE":
+					    		typesList.add("TABLE");
+					    		break;
+					    	case "VIEW":
+					    		typesList.add("VIEW");
+					    		break;
+					    	case "BOTH":
+					    		typesList.add("TABLE");
+					    		typesList.add("VIEW");
+					    		break;
+					    }
+					    types = typesList.stream().toArray(String[]::new);
+				    }		        	
+		        	
 		    		ResultSet rst0 = metaData.getTables(con.getCatalog(), schema, table, types);
 		    		String label = "";
 		    		String desc = "";

@@ -163,6 +163,7 @@ public class Tools {
 				r.setCognosCatalog(getAttrValue(node, "cognosCatalog"));
 				r.setCognosDataSource(getAttrValue(node, "cognosDataSource"));
 				r.setCognosSchema(getAttrValue(node, "cognosSchema"));
+				r.setTableTypes(getAttrValue(node, "tableTypes"));
 				NodeList childNodes = node.getChildNodes();
 				for(int i = 0; i < childNodes.getLength(); i++){
 					Node childNode = childNodes.item(i);

@@ -60,6 +60,7 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 	Path prj = null;
 	String relationMode = "DB";
 	Map<String, QuerySubject> qsFromXML = new HashMap<String, QuerySubject>();
+	Project project = null;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -102,17 +103,19 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		
 		try{
 			
-			Project project = (Project) request.getSession().getAttribute("currentProject");
-			language = project.languages.get(0);
-			qsFromXML = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
-			if(qsFromXML == null) {
-				withRecCount = (Boolean) request.getServletContext().getAttribute("withRecCount");
-				relationCount = project.isRelationCount();
-				con = (Connection) request.getSession().getAttribute("con");
-				schema = (String) request.getSession().getAttribute("schema");
-				dbmd = (Map<String, DBMDTable>) request.getSession().getAttribute("dbmd");
-				tableAliases = (Map<String, String>) request.getSession().getAttribute("tableAliases");
-				metaData = con.getMetaData();
+			project = (Project) request.getSession().getAttribute("currentProject");
+			if(project != null) {
+				language = project.languages.get(0);
+				qsFromXML = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
+				if(qsFromXML == null) {
+					withRecCount = (Boolean) request.getServletContext().getAttribute("withRecCount");
+					relationCount = project.isRelationCount();
+					con = (Connection) request.getSession().getAttribute("con");
+					schema = (String) request.getSession().getAttribute("schema");
+					dbmd = (Map<String, DBMDTable>) request.getSession().getAttribute("dbmd");
+					tableAliases = (Map<String, String>) request.getSession().getAttribute("tableAliases");
+					metaData = con.getMetaData();
+				}
 			}
 			
 			QuerySubject querySubject = getQuerySubjects();
@@ -165,7 +168,27 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 
 		if(importLabel && qsFromXML == null) {
 		
-			String[] types = {"TABLE"};
+//		    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+		    String[] types = {"TABLE"}; 
+		    		
+		    if(project != null) {
+			    String tableTypes = project.getResource().getTableTypes();
+			    List<String> typesList = new ArrayList<String>();
+			    switch(tableTypes.toUpperCase()) {
+			    	case "TABLE":
+			    		typesList.add("TABLE");
+			    		break;
+			    	case "VIEW":
+			    		typesList.add("VIEW");
+			    		break;
+			    	case "BOTH":
+			    		typesList.add("TABLE");
+			    		typesList.add("VIEW");
+			    		break;
+			    }
+			    types = typesList.stream().toArray(String[]::new);
+		    }			
+			
 			rst = metaData.getTables(con.getCatalog(), schema, table, types);
 			
 			while (rst.next()) {
@@ -491,7 +514,28 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 	        	relation.setAbove(fkcolumn_name);
 	        	
 	        	if(importLabel && qsFromXML == null) {
-		        	String[] types = {"TABLE"};
+	        		
+//				    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+				    String[] types = {"TABLE"}; 
+				    		
+				    if(project != null) {
+					    String tableTypes = project.getResource().getTableTypes();
+					    List<String> typesList = new ArrayList<String>();
+					    switch(tableTypes.toUpperCase()) {
+					    	case "TABLE":
+					    		typesList.add("TABLE");
+					    		break;
+					    	case "VIEW":
+					    		typesList.add("VIEW");
+					    		break;
+					    	case "BOTH":
+					    		typesList.add("TABLE");
+					    		typesList.add("VIEW");
+					    		break;
+					    }
+					    types = typesList.stream().toArray(String[]::new);
+				    }
+				    
 		    		ResultSet rst0 = metaData.getTables(con.getCatalog(), schema, pktable_name, types);
 		    		while (rst0.next()) {
 		    			String label = rst0.getString("REMARKS");
