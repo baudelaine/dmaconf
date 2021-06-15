@@ -229,34 +229,45 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		
 		if(withRecCount && qsFromXML == null){
             long recCount = 0;
-    		Statement stmt = null;
-    		ResultSet rs = null;
-            try{
-	    		String query = "SELECT COUNT(*) FROM ";
-	    		if(!schema.isEmpty()){
-	    			query += schema + ".";
-	    		}
-	    		query += table;
-	    		
-	    		stmt = con.createStatement();
-	            rs = stmt.executeQuery(query);
-	            while (rs.next()) {
-	            	recCount = rs.getLong(1);
+            
+            if(dbmd != null){
+            	System.out.println("Get recCount from DBMD...");
+				DBMDTable dbmdTable = dbmd.get(table);
+				if(dbmdTable != null){
+					result.setRecCount(dbmdTable.getTable_recCount());
+				}
+			}            
+            else {
+            	System.out.println("Compute recCount...");
+	    		Statement stmt = null;
+	    		ResultSet rs = null;
+	            try{
+		    		String query = "SELECT COUNT(*) FROM ";
+		    		if(!schema.isEmpty()){
+		    			query += schema + ".";
+		    		}
+		    		query += table;
+		    		
+		    		stmt = con.createStatement();
+		            rs = stmt.executeQuery(query);
+		            while (rs.next()) {
+		            	recCount = rs.getLong(1);
+		            }
+		            result.setRecCount(recCount);
+		            qs_recCount = recCount;
 	            }
-	            result.setRecCount(recCount);
-	            qs_recCount = recCount;
+	            catch(SQLException e){
+	            	System.out.println("CATCHING SQLEXEPTION...");
+	            	System.out.println(e.getSQLState());
+	            	System.out.println(e.getMessage());
+	            	
+	            }
+	            finally {
+		            if (stmt != null) { stmt.close();}
+		            if(rst != null){rst.close();}
+					
+				}
             }
-            catch(SQLException e){
-            	System.out.println("CATCHING SQLEXEPTION...");
-            	System.out.println(e.getSQLState());
-            	System.out.println(e.getMessage());
-            	
-            }
-            finally {
-	            if (stmt != null) { stmt.close();}
-	            if(rst != null){rst.close();}
-				
-			}
 			
 		}
 		
@@ -288,58 +299,81 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		if(qsFromXML != null) {
 			return qsFromXML.get(table).getFields();
 		}
+
+	    boolean tableIsView = false;
+	    
+	    if(project != null) {
+		    String tableTypes = project.getResource().getTableTypes();
+		    switch(tableTypes.toUpperCase()) {
+		    	case "TABLE":
+		    		tableIsView = false;
+		    		break;
+		    	case "VIEW":
+		    		tableIsView = true;
+		    		break;
+		    	case "BOTH":
+		    		tableIsView = false;
+		    		break;
+		    }
+	    }
 		
 		ResultSet rst = metaData.getPrimaryKeys(con.getCatalog(), schema, table);
 	    Set<String> pks = new HashSet<String>();
-	    
-	    while (rst.next()) {
-	    	pks.add(rst.getString("COLUMN_NAME"));
+		
+	    if(!tableIsView) {
+		    while (rst.next()) {
+		    	pks.add(rst.getString("COLUMN_NAME"));
+		    }
+		    
+	        if(rst != null){rst.close();}
 	    }
-
-        if(rst != null){rst.close();}
         
         rst = metaData.getIndexInfo(con.getCatalog(), schema, table, false, true);
 	    Set<String> indexes = new HashSet<String>();
 	    
-	    while (rst.next()) {
-	    	indexes.add(rst.getString("COLUMN_NAME"));
+	    if(!tableIsView) {
+		    while (rst.next()) {
+		    	indexes.add(rst.getString("COLUMN_NAME"));
+		    }
+	
+	        if(rst != null){rst.close();}
 	    }
-
-        if(rst != null){rst.close();}
-        
+	    
 		Set<String> emptyColumns = new HashSet<String>();
 		
         rst = metaData.getColumns(con.getCatalog(), schema, table, "%");
 	    Statement stmt = con.createStatement();
 		
-	    while (rst.next()) {
-
-	    	String colName = (rst.getString("COLUMN_NAME"));
-	    	
-	    	String query = "select * from " + table + " where " + colName + " is not null";
-
-		    
-    		ResultSet rst1 = null;
-            try{
-	            rst1 = stmt.executeQuery(query);
-	            if (!rst1.next()) {    
-	                emptyColumns.add(colName);
-	            } 		            
-            }
-            catch(SQLException e){
-            	System.out.println("CATCHING SQLEXCEPTION...");
-            	System.out.println(e.getSQLState());
-            	System.out.println(e.getMessage());
-            	
-            }
-            finally {
-				if(rst1 != null) {rst1.close();}
-            }
-		
+	    if(!tableIsView) {
+		    while (rst.next()) {
+	
+		    	String colName = (rst.getString("COLUMN_NAME"));
+		    	
+		    	String query = "select * from " + table + " where " + colName + " is not null";
+	
+			    
+	    		ResultSet rst1 = null;
+	            try{
+		            rst1 = stmt.executeQuery(query);
+		            if (!rst1.next()) {    
+		                emptyColumns.add(colName);
+		            } 		            
+	            }
+	            catch(SQLException e){
+	            	System.out.println("CATCHING SQLEXCEPTION...");
+	            	System.out.println(e.getSQLState());
+	            	System.out.println(e.getMessage());
+	            	
+	            }
+	            finally {
+					if(rst1 != null) {rst1.close();}
+	            }
+			
+		    }
+		    if(rst != null){rst.close();}
+		    if(stmt != null) {stmt.close();}
 	    }
-	    if(rst != null){rst.close();}
-	    if(stmt != null) {stmt.close();}
-
+	    
 		List<Field> result = new ArrayList<Field>();
 		
         rst = metaData.getColumns(con.getCatalog(), schema, table, "%");
