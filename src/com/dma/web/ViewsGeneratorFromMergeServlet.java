@@ -87,12 +87,12 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 				}
 
 				String views = (String) parms.get("views");
-				List<QuerySubject> viewsList = new ArrayList<QuerySubject>();
+				List<QuerySubject> viewList = new ArrayList<QuerySubject>();
 				
 				try {
 					ObjectMapper mapper = new ObjectMapper();
 			        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			        viewsList = Arrays.asList(mapper.readValue(views, QuerySubject[].class));
+			        viewList = Arrays.asList(mapper.readValue(views, QuerySubject[].class));
 				}
 				catch (Exception e) {
 					result.put("STATUS", "KO");
@@ -102,41 +102,24 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 				
 				
 		        query_subjects = new HashMap<String, QuerySubject>();
-		        Map<String, Integer> recurseCount = new HashMap<String, Integer>();
+		        Map<String, Integer> recurseCountQs = new HashMap<String, Integer>();
 		        
 		        for(QuerySubject qs: qsList){
 		        	query_subjects.put(qs.get_id(), qs);
-		        	recurseCount.put(qs.getTable_alias(), 0);
+		        	recurseCountQs.put(qs.getTable_alias(), 0);
 		        }				
 				
 		        query_subjects_views = new HashMap<String, QuerySubject>();
+		        Map<String, Integer> recurseCountVs = new HashMap<String, Integer>();
+		        
+		        for(QuerySubject qs: viewList){
+		        	query_subjects_views.put(qs.getTable_name(), qs);
+		        	recurseCountVs.put(qs.getTable_name(), 0);
+		        }
+		        
 		        gRefMap = new HashMap<String, Integer>();
 		        
 		        
-				//scan final views
-				for(Entry<String, QuerySubject> query_subject: query_subjects.entrySet()){
-					
-					if (query_subject.getValue().getType().equalsIgnoreCase("Final")){
-						
-						//Views
-						if(!query_subject.getValue().getMerge().equals("")) {
-							String viewsTab[] = StringUtils.split(query_subject.getValue().getMerge(), ";");
-							
-							for (int i=0;i<viewsTab.length;i++) {
-								String viewName = viewsTab[i];
-								QuerySubject qsView = new QuerySubject();
-								qsView.set_id(viewName);
-								qsView.setTable_name(viewName);
-								qsView.setTable_alias(viewName);
-								qsView.setType("Final");
-								if (query_subjects_views.get(qsView.getTable_alias()) == null) {
-									query_subjects_views.put(qsView.getTable_alias(), qsView);
-								}		
-							}
-						}
-						//End Views
-					}
-				}
 				//scan final views
 				for(Entry<String, QuerySubject> query_subject: query_subjects.entrySet()){
 					
@@ -171,11 +154,11 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 						
 						//lancement f1 ref
 						for(QuerySubject qs: qsList){
-				        	recurseCount.put(qs.getTable_alias(), 0);
+				        	recurseCountQs.put(qs.getTable_alias(), 0);
 				        }
 						
 						if (!query_subject.getValue().getMerge().equals("")) {
-							f1(query_subject.getValue().getTable_alias(), query_subject.getValue().getTable_alias(), "", "[DATA].[" + query_subject.getValue().getTable_alias() + "]", query_subject.getValue().getTable_alias(), recurseCount, "Final", filterNameSpaceSource, query_subject.getValue().getMerge(), "");
+							f1(query_subject.getValue().getTable_alias(), query_subject.getValue().getTable_alias(), "", "[DATA].[" + query_subject.getValue().getTable_alias() + "]", query_subject.getValue().getTable_alias(), recurseCountQs, "Final", filterNameSpaceSource, query_subject.getValue().getMerge(), "");
 						}
 						//end f1		
 
@@ -195,7 +178,20 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 									String ex = "[DATA].[" + query_subject.getValue().getTable_alias() + "].[" + field.getField_name() + "]";
 									f.setExpression(ex);
 									f.setRole("Field");
-									qsView.addField(f);
+									Boolean addField = true;
+									for(Field existingfield: qsView.getFields()) {
+										if (existingfield.get_id().equals(f.get_id())) {
+											if(addField) {
+												addField = false;
+											}
+										}
+									}
+									if (addField) {
+										qsView.addField(f);
+									}
+									//remove fields
+									
+									//end remove fields
 								}
 							}
 							//end views	
@@ -331,7 +327,20 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 						f.setExpression(ex);
 						f.setRole("FolderRefView");
 //						System.out.println(f.get_id() + " * * * " + f.getRole());
-						qsview.addField(f);
+						
+						Boolean addField = true;
+						for(Field existingfield: qsview.getFields()) {
+							if (existingfield.get_id().equals(f.get_id())) {
+								if(addField) {
+									addField = false;
+								}
+							}
+						}
+						if (addField) {
+							qsview.addField(f);
+						}
+						
+					//	qsview.addField(f);
 						mergeView = query_subjects.get(pkAlias + namespaceID).getMerge();
 						gDirNameCurrentView = "*";
 					}
@@ -371,7 +380,7 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 										QuerySubject qsView = query_subjects_views.get(viewName);
 										Field f = new Field();
 										//Copie des éléments du field afin d'éviter la copie d'objet qui n'est pas adapté ! f = field redonne une référence existante 
-										//lorsqu'on repasser par un field ou nous sommes déjà passé. 
+										//lorsqu'on repasse par un field ou nous sommes déjà passé. 
 										f.setField_type(field.getField_type());
 										f.setPk(field.isPk());
 										f.setIndexed(field.isIndexed());
@@ -407,6 +416,21 @@ public class ViewsGeneratorFromMergeServlet extends HttpServlet {
 												addField = false;
 											}
 										}
+/*										// Régenerated views
+										Boolean addFieldRegen = true;
+										for(Field existingfield: qsView.getFields()) {
+											if (existingfield.get_id().equals(f.get_id())) {
+												if(addFieldRegen) {
+													addFieldRegen = false;
+												}
+											}
+										}
+										if (addFieldRegen) {
+											if (addField) {
+												qsView.addField(f);
+											}	
+										}
+*/										// regenere
 										if (addField) {
 											qsView.addField(f);
 										}			
