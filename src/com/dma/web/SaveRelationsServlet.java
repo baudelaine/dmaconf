@@ -71,7 +71,29 @@ public class SaveRelationsServlet extends HttpServlet {
 			Map<String, String> tableAliases = (Map<String, String>) request.getSession().getAttribute("tableAliases");
 			
             List<String> tables = new ArrayList<String>();
-			String[] types = {"TABLE"};
+            
+//		    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+		    String[] types = {"TABLE"}; 
+		    		
+		    Project project = (Project) request.getSession().getAttribute("currentProject");
+		    if(project != null) {
+			    String tableTypes = project.getResource().getTableTypes();
+			    List<String> typesList = new ArrayList<String>();
+			    switch(tableTypes.toUpperCase()) {
+			    	case "TABLE":
+			    		typesList.add("TABLE");
+			    		break;
+			    	case "VIEW":
+			    		typesList.add("VIEW");
+			    		break;
+			    	case "BOTH":
+			    		typesList.add("TABLE");
+			    		typesList.add("VIEW");
+			    		break;
+			    }
+			    types = typesList.stream().toArray(String[]::new);
+		    }
+		    
 		    ResultSet rst = metaData.getTables(con.getCatalog(), schema, "%", types);	
 		    
 		    while (rst.next()) {

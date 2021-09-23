@@ -75,8 +75,29 @@ public class ScanServlet extends HttpServlet {
 				schema = (String) request.getSession().getAttribute("schema");
 				
 			    DatabaseMetaData metaData = con.getMetaData();
-			    //String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
-			    String[] types = {"TABLE"};
+			    
+//			    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+			    String[] types = {"TABLE"}; 
+			    		
+			    Project project = (Project) request.getSession().getAttribute("currentProject");
+			    if(project != null) {
+				    String tableTypes = project.getResource().getTableTypes();
+				    List<String> typesList = new ArrayList<String>();
+				    switch(tableTypes.toUpperCase()) {
+				    	case "TABLE":
+				    		typesList.add("TABLE");
+				    		break;
+				    	case "VIEW":
+				    		typesList.add("VIEW");
+				    		break;
+				    	case "BOTH":
+				    		typesList.add("TABLE");
+				    		typesList.add("VIEW");
+				    		break;
+				    }
+				    types = typesList.stream().toArray(String[]::new);
+			    }
+			    
 			    rst = metaData.getTables(con.getCatalog(), schema, "%", types);	
 	
 			    List<Map<String, String>> temp = new ArrayList<Map<String, String>>();

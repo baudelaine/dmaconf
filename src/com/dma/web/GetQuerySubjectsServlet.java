@@ -60,6 +60,7 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 	Path prj = null;
 	String relationMode = "DB";
 	Map<String, QuerySubject> qsFromXML = new HashMap<String, QuerySubject>();
+	Project project = null;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -102,17 +103,19 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		
 		try{
 			
-			Project project = (Project) request.getSession().getAttribute("currentProject");
-			language = project.languages.get(0);
-			qsFromXML = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
-			if(qsFromXML == null) {
-				withRecCount = (Boolean) request.getServletContext().getAttribute("withRecCount");
-				relationCount = project.isRelationCount();
-				con = (Connection) request.getSession().getAttribute("con");
-				schema = (String) request.getSession().getAttribute("schema");
-				dbmd = (Map<String, DBMDTable>) request.getSession().getAttribute("dbmd");
-				tableAliases = (Map<String, String>) request.getSession().getAttribute("tableAliases");
-				metaData = con.getMetaData();
+			project = (Project) request.getSession().getAttribute("currentProject");
+			if(project != null) {
+				language = project.languages.get(0);
+				qsFromXML = (Map<String, QuerySubject>) request.getSession().getAttribute("QSFromXML");
+				if(qsFromXML == null) {
+					withRecCount = (Boolean) request.getServletContext().getAttribute("withRecCount");
+					relationCount = project.isRelationCount();
+					con = (Connection) request.getSession().getAttribute("con");
+					schema = (String) request.getSession().getAttribute("schema");
+					dbmd = (Map<String, DBMDTable>) request.getSession().getAttribute("dbmd");
+					tableAliases = (Map<String, String>) request.getSession().getAttribute("tableAliases");
+					metaData = con.getMetaData();
+				}
 			}
 			
 			QuerySubject querySubject = getQuerySubjects();
@@ -163,25 +166,45 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		String desc = "";
 		ResultSet rst = null;
 
-		if(importLabel && qsFromXML == null) {
-		
-			String[] types = {"TABLE"};
-			rst = metaData.getTables(con.getCatalog(), schema, table, types);
-			
-			while (rst.next()) {
-		    	label = rst.getString("REMARKS");
-		    }
-			
-			if(rst != null){rst.close();}
-			
-			if(label == null) {label = "";}
-			else {
-		    	if(label.length() > 50) {
-			    	desc = label;
-		    		label = label.substring(0, 50);
-		    	}
-			}
-		}
+//		if(importLabel && qsFromXML == null) {
+//		
+////		    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+//		    String[] types = {"TABLE"}; 
+//		    		
+//		    if(project != null) {
+//			    String tableTypes = project.getResource().getTableTypes();
+//			    List<String> typesList = new ArrayList<String>();
+//			    switch(tableTypes.toUpperCase()) {
+//			    	case "TABLE":
+//			    		typesList.add("TABLE");
+//			    		break;
+//			    	case "VIEW":
+//			    		typesList.add("VIEW");
+//			    		break;
+//			    	case "BOTH":
+//			    		typesList.add("TABLE");
+//			    		typesList.add("VIEW");
+//			    		break;
+//			    }
+//			    types = typesList.stream().toArray(String[]::new);
+//		    }			
+//			
+//			rst = metaData.getTables(con.getCatalog(), schema, table, types);
+//			
+//			while (rst.next()) {
+//		    	label = rst.getString("REMARKS");
+//		    }
+//			
+//			if(rst != null){rst.close();}
+//			
+//			if(label == null) {label = "";}
+//			else {
+//		    	if(label.length() > 50) {
+//			    	desc = label;
+//		    		label = label.substring(0, 50);
+//		    	}
+//			}
+//		}
 
 		QuerySubject result = new QuerySubject();
 		
@@ -206,34 +229,45 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		
 		if(withRecCount && qsFromXML == null){
             long recCount = 0;
-    		Statement stmt = null;
-    		ResultSet rs = null;
-            try{
-	    		String query = "SELECT COUNT(*) FROM ";
-	    		if(!schema.isEmpty()){
-	    			query += schema + ".";
-	    		}
-	    		query += table;
-	    		
-	    		stmt = con.createStatement();
-	            rs = stmt.executeQuery(query);
-	            while (rs.next()) {
-	            	recCount = rs.getLong(1);
+            
+            if(dbmd != null){
+            	System.out.println("Get recCount from DBMD...");
+				DBMDTable dbmdTable = dbmd.get(table);
+				if(dbmdTable != null){
+					result.setRecCount(dbmdTable.getTable_recCount());
+				}
+			}            
+            else {
+            	System.out.println("Compute recCount...");
+	    		Statement stmt = null;
+	    		ResultSet rs = null;
+	            try{
+		    		String query = "SELECT COUNT(*) FROM ";
+		    		if(!schema.isEmpty()){
+		    			query += schema + ".";
+		    		}
+		    		query += table;
+		    		
+		    		stmt = con.createStatement();
+		            rs = stmt.executeQuery(query);
+		            while (rs.next()) {
+		            	recCount = rs.getLong(1);
+		            }
+		            result.setRecCount(recCount);
+		            qs_recCount = recCount;
 	            }
-	            result.setRecCount(recCount);
-	            qs_recCount = recCount;
+	            catch(SQLException e){
+	            	System.out.println("CATCHING SQLEXEPTION...");
+	            	System.out.println(e.getSQLState());
+	            	System.out.println(e.getMessage());
+	            	
+	            }
+	            finally {
+		            if (stmt != null) { stmt.close();}
+		            if(rst != null){rst.close();}
+					
+				}
             }
-            catch(SQLException e){
-            	System.out.println("CATCHING SQLEXEPTION...");
-            	System.out.println(e.getSQLState());
-            	System.out.println(e.getMessage());
-            	
-            }
-            finally {
-	            if (stmt != null) { stmt.close();}
-	            if(rst != null){rst.close();}
-				
-			}
 			
 		}
 		
@@ -265,58 +299,81 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		if(qsFromXML != null) {
 			return qsFromXML.get(table).getFields();
 		}
+
+	    boolean tableIsView = false;
+	    
+	    if(project != null) {
+		    String tableTypes = project.getResource().getTableTypes();
+		    switch(tableTypes.toUpperCase()) {
+		    	case "TABLE":
+		    		tableIsView = false;
+		    		break;
+		    	case "VIEW":
+		    		tableIsView = true;
+		    		break;
+		    	case "BOTH":
+		    		tableIsView = false;
+		    		break;
+		    }
+	    }
 		
 		ResultSet rst = metaData.getPrimaryKeys(con.getCatalog(), schema, table);
 	    Set<String> pks = new HashSet<String>();
-	    
-	    while (rst.next()) {
-	    	pks.add(rst.getString("COLUMN_NAME"));
+		
+	    if(!tableIsView) {
+		    while (rst.next()) {
+		    	pks.add(rst.getString("COLUMN_NAME"));
+		    }
+		    
+	        if(rst != null){rst.close();}
 	    }
-
-        if(rst != null){rst.close();}
         
         rst = metaData.getIndexInfo(con.getCatalog(), schema, table, false, true);
 	    Set<String> indexes = new HashSet<String>();
 	    
-	    while (rst.next()) {
-	    	indexes.add(rst.getString("COLUMN_NAME"));
+	    if(!tableIsView) {
+		    while (rst.next()) {
+		    	indexes.add(rst.getString("COLUMN_NAME"));
+		    }
+	
+	        if(rst != null){rst.close();}
 	    }
-
-        if(rst != null){rst.close();}
-        
+	    
 		Set<String> emptyColumns = new HashSet<String>();
 		
         rst = metaData.getColumns(con.getCatalog(), schema, table, "%");
 	    Statement stmt = con.createStatement();
 		
-	    while (rst.next()) {
-
-	    	String colName = (rst.getString("COLUMN_NAME"));
-	    	
-	    	String query = "select * from " + table + " where " + colName + " is not null";
-
-		    
-    		ResultSet rst1 = null;
-            try{
-	            rst1 = stmt.executeQuery(query);
-	            if (!rst1.next()) {    
-	                emptyColumns.add(colName);
-	            } 		            
-            }
-            catch(SQLException e){
-            	System.out.println("CATCHING SQLEXCEPTION...");
-            	System.out.println(e.getSQLState());
-            	System.out.println(e.getMessage());
-            	
-            }
-            finally {
-				if(rst1 != null) {rst1.close();}
-            }
-		
+	    if(!tableIsView) {
+		    while (rst.next()) {
+	
+		    	String colName = (rst.getString("COLUMN_NAME"));
+		    	
+		    	String query = "select * from " + table + " where " + colName + " is not null";
+	
+			    
+	    		ResultSet rst1 = null;
+	            try{
+		            rst1 = stmt.executeQuery(query);
+		            if (!rst1.next()) {    
+		                emptyColumns.add(colName);
+		            } 		            
+	            }
+	            catch(SQLException e){
+	            	System.out.println("CATCHING SQLEXCEPTION...");
+	            	System.out.println(e.getSQLState());
+	            	System.out.println(e.getMessage());
+	            	
+	            }
+	            finally {
+					if(rst1 != null) {rst1.close();}
+	            }
+			
+		    }
+		    if(rst != null){rst.close();}
+		    if(stmt != null) {stmt.close();}
 	    }
-	    if(rst != null){rst.close();}
-	    if(stmt != null) {stmt.close();}
-
+	    
 		List<Field> result = new ArrayList<Field>();
 		
         rst = metaData.getColumns(con.getCatalog(), schema, table, "%");
@@ -491,7 +548,28 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 	        	relation.setAbove(fkcolumn_name);
 	        	
 	        	if(importLabel && qsFromXML == null) {
-		        	String[] types = {"TABLE"};
+	        		
+//				    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+				    String[] types = {"TABLE"}; 
+				    		
+				    if(project != null) {
+					    String tableTypes = project.getResource().getTableTypes();
+					    List<String> typesList = new ArrayList<String>();
+					    switch(tableTypes.toUpperCase()) {
+					    	case "TABLE":
+					    		typesList.add("TABLE");
+					    		break;
+					    	case "VIEW":
+					    		typesList.add("VIEW");
+					    		break;
+					    	case "BOTH":
+					    		typesList.add("TABLE");
+					    		typesList.add("VIEW");
+					    		break;
+					    }
+					    types = typesList.stream().toArray(String[]::new);
+				    }
+				    
 		    		ResultSet rst0 = metaData.getTables(con.getCatalog(), schema, pktable_name, types);
 		    		while (rst0.next()) {
 		    			String label = rst0.getString("REMARKS");

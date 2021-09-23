@@ -92,10 +92,12 @@ public class UpdateModelServlet extends HttpServlet {
 
 				boolean isXML = false;
 				Project project = (Project) request.getSession().getAttribute("currentProject");
-				Resource resource = project.getResource();
-				if(resource.getJndiName().equalsIgnoreCase("XML")) {
-					isXML = true;
-				}				
+				if(project != null) {
+					Resource resource = project.getResource();
+					if(resource.getJndiName().equalsIgnoreCase("XML")) {
+						isXML = true;
+					}
+				}
 
 				Map<String, List<Field>> newFields = new HashMap<String, List<Field>>();
 				Map<String, List<Field>> fieldsToRemove = new HashMap<String, List<Field>>();
@@ -139,7 +141,28 @@ public class UpdateModelServlet extends HttpServlet {
 					String schema = (String) request.getSession().getAttribute("schema");
 					
 				    DatabaseMetaData metaData = con.getMetaData();
-				    String[] types = {"TABLE"};
+				    
+//				    String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+				    String[] types = {"TABLE"}; 
+				    		
+				    if(project != null) {
+					    String tableTypes = project.getResource().getTableTypes();
+					    List<String> typesList = new ArrayList<String>();
+					    switch(tableTypes.toUpperCase()) {
+					    	case "TABLE":
+					    		typesList.add("TABLE");
+					    		break;
+					    	case "VIEW":
+					    		typesList.add("VIEW");
+					    		break;
+					    	case "BOTH":
+					    		typesList.add("TABLE");
+					    		typesList.add("VIEW");
+					    		break;
+					    }
+					    types = typesList.stream().toArray(String[]::new);
+				    }				    
+				    
 				    ResultSet rstTables = metaData.getTables(con.getCatalog(), schema, "%", types);					    
 
 				    while (rstTables.next()) {
