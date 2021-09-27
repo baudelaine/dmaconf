@@ -93,11 +93,11 @@ public class GetLabelsServlet extends HttpServlet {
 					Map<String, Map<String, String>> clMap = new HashMap<String, Map<String, String>>();
 					Map<String, Map<String, String>> cdMap = new HashMap<String, Map<String, String>>();
 					
-					String tableInClause = "('" + StringUtils.join(tables.iterator(), "','") + "')";
-					
 					String tlQuery = (String) parms.get("tlQuery");
 					System.out.println("tlQuery=" + tlQuery);
 					if(!tlQuery.isEmpty() && StringUtils.countMatches(tlQuery, "(?)") == 1){
+						String tableInClause = Tools.splitInClause(tlQuery, tables, 1000);
+
 						tlQuery = StringUtils.replace(tlQuery, "(?)", tableInClause);
 						System.out.println("tlQuery=" + tlQuery);
 						stmt = con.prepareStatement(tlQuery);
@@ -117,6 +117,7 @@ public class GetLabelsServlet extends HttpServlet {
 					String tdQuery = (String) parms.get("tdQuery");
 					System.out.println("tdQuery=" + tdQuery);
 					if(!tdQuery.isEmpty() && StringUtils.countMatches(tdQuery, "(?)") == 1){
+						String tableInClause = Tools.splitInClause(tdQuery, tables, 1000);
 						tdQuery = StringUtils.replace(tdQuery, "(?)", tableInClause);
 						stmt = con.prepareStatement(tdQuery);
 						System.out.println("tdQuery=" + tdQuery);
@@ -146,10 +147,9 @@ public class GetLabelsServlet extends HttpServlet {
 						}
 						rst.close();
 	
-						String columnInClause = "('" + StringUtils.join(fields.iterator(), "','") + "')";
-						
 						String clQuery = (String) parms.get("clQuery");
 						if(!clQuery.isEmpty() && StringUtils.countMatches(clQuery, "(?)") == 1 && StringUtils.countMatches(clQuery, " ? ") == 1){
+							String columnInClause = Tools.splitInClause(clQuery, fields, 1000);
 							clQuery = StringUtils.replace(clQuery, "(?)", columnInClause);
 							
 							Map<String, String> cols = new HashMap<String, String>();
@@ -176,6 +176,7 @@ public class GetLabelsServlet extends HttpServlet {
 						
 						String cdQuery = (String) parms.get("cdQuery");
 						if(!cdQuery.isEmpty() && StringUtils.countMatches(cdQuery, "(?)") == 1 && StringUtils.countMatches(cdQuery, " ? ") == 1){
+							String columnInClause = Tools.splitInClause(cdQuery, fields, 1000);
 							cdQuery = StringUtils.replace(cdQuery, "(?)", columnInClause);
 							
 							Map<String, String> cols = new HashMap<String, String>();

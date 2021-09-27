@@ -24,6 +24,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -35,6 +36,48 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Tools {
+	
+	public final static String splitInClause(String query, List<String> fullList, int limit) {
+		
+		List<List<String>> parts = ListUtils.partition(fullList, limit);		
+		
+		query = StringUtils.replaceAll(query, "\\s+", " ");
+		query = query.toUpperCase();
+		
+		String clause = null;
+		if(!query.isEmpty() && StringUtils.countMatches(query, "(?)") == 1){
+			clause = StringUtils.substringBetween(query, " AND ", " IN (?)");
+			if(clause == null) {
+				clause = StringUtils.substringBetween(query, " WHERE ", " IN (?)");
+			}
+		}
+		if(!query.isEmpty() && StringUtils.countMatches(query, " = ?") == 1){
+			clause = StringUtils.substringBetween(query, " AND ", " = ?");
+			if(clause == null) {
+				clause = StringUtils.substringBetween(query, " WHERE ", " = ?");
+			}
+		}
+		
+		if(clause != null) {
+			clause = clause.trim();
+			System.out.println(clause);
+			
+			StringBuffer sb = new StringBuffer();
+			int i = 1;
+			for(List<String> part: parts) {
+	//			System.out.println(output);
+				sb.append("('" + StringUtils.join(part.iterator(), "','") + "')");
+				if(i < parts.size()) {
+					sb.append(" OR " + clause + " IN ");
+				}
+				i++;
+			}
+			return sb.toString();
+		}
+		
+		return null;
+				
+	}
 
 	public final static String toJSON(Object o){
 		try{

@@ -71,7 +71,7 @@ public class BuildTestQueryServlet extends HttpServlet {
 			String query = (String) parms.get("query");
 			String type = (String) parms.get("type");
 			List<String> tables = (List<String>) parms.get("tables");
-			String tableInClause = "('" + StringUtils.join(tables.iterator(), "','") + "')";
+			String tableInClause = Tools.splitInClause(query, tables, 1000);
 			
 			switch(type){
 			
@@ -101,7 +101,7 @@ public class BuildTestQueryServlet extends HttpServlet {
 						}
 						rst.close();
 
-						String columnInClause = "('" + StringUtils.join(fields.iterator(), "','") + "')";
+						String columnInClause = Tools.splitInClause(query, fields, 1000);
 						query = StringUtils.replace(query, " = ?", " = '" + tables.get(0) + "'");
 						query = StringUtils.replace(query, " (?)", " " + columnInClause);
 
