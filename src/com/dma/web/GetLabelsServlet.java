@@ -181,13 +181,15 @@ public class GetLabelsServlet extends HttpServlet {
 						if(!cdQuery.isEmpty() && StringUtils.countMatches(cdQuery, "(?)") == 1 && StringUtils.countMatches(cdQuery, " ? ") == 1){
 							String columnInClause = Tools.splitInClause(cdQuery, fields, 1000);
 							cdQuery = StringUtils.replace(cdQuery, "(?)", columnInClause);
+							cdQuery = StringUtils.replace(cdQuery, " ? ", " '" + table + "' ");
+							
 							
 							Map<String, String> cols = new HashMap<String, String>();
 
 							System.out.println("cdQuery=" + cdQuery);
 							
 							stmt = con.prepareStatement(cdQuery);
-							stmt.setString(1, table);
+//							stmt.setString(1, table);
 							rst = stmt.executeQuery();
 							while(rst.next()){
 								cols.put(rst.getString("Column_Name").toUpperCase(), rst.getString("Column_Description"));
