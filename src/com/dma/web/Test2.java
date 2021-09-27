@@ -1,15 +1,18 @@
 package com.dma.web;
 
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.collections4.ListUtils;
@@ -39,6 +42,22 @@ public class Test2 {
 			
 			query = StringUtils.replace(query, "(?)", Tools.splitInClause(query, tables, 1000));
 			System.out.println(query);
+			
+    		double d0 = Double.parseDouble(String.valueOf("0"));
+    		double d1 = Double.parseDouble(String.valueOf("0"));
+    		
+    		System.out.println("recCount=" + d0);
+    		System.out.println("qs_recCount=" + d1);	
+    		
+    		
+			
+    		double num = (d0/d1) * 100;
+    		System.out.println("num=" + num);
+    		NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
+    		nf.setMaximumFractionDigits(3);
+    		nf.setRoundingMode(RoundingMode.UP);
+    	    num = Double.parseDouble(nf.format(num));
+    		
 			
 //			con.createStatement().execute(query + " IN " + tableInClause);
 			

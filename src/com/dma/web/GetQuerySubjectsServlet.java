@@ -235,6 +235,7 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 				DBMDTable dbmdTable = dbmd.get(table);
 				if(dbmdTable != null){
 					result.setRecCount(dbmdTable.getTable_recCount());
+					qs_recCount = dbmdTable.getTable_recCount();
 				}
 			}            
             else {
@@ -707,13 +708,22 @@ public class GetQuerySubjectsServlet extends HttpServlet {
 		    		double d0 = Double.parseDouble(String.valueOf(recCount));
 		    		double d1 = Double.parseDouble(String.valueOf(qs_recCount));
 		    		
+		    		System.out.println("recCount=" + recCount);
+		    		System.out.println("qs_recCount=" + qs_recCount);
+		    		
 		    		double num = (d0/d1) * 100;
+		    		System.out.println("num=" + num);
 		    		NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
 		    		nf.setMaximumFractionDigits(3);
 //		    		nf.setMinimumFractionDigits(5);	    
 		    		nf.setRoundingMode(RoundingMode.UP);
 		    	    num = Double.parseDouble(nf.format(num));
 		            rel.setRecCountPercent(num);
+	            }
+	            catch(NumberFormatException nfe) {
+	            	// Avoid divide 0/0 failure
+	            	System.out.println("CATCHING NUMBER FORMAT EXCEPTION...");
+	            	System.out.println(nfe.getMessage());
 	            }
 	            catch(SQLException e){
 	            	System.out.println("CATCHING SQLEXEPTION...");
