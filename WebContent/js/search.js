@@ -1226,11 +1226,12 @@ function GetLabels(){
         ShowAlert("ERROR: " + labels.MESSAGE + "<br>TROUBLESHOOTING: " + labels.TROUBLESHOOTING, "alert-danger", $("#queryModalAlert"));
       }
       else{
+        $('#queryModal').modal('toggle');
         dbmd = labels.DATAS;
         console.log(Object.values(dbmd));
         loadDBMD(Object.values(dbmd));
         // console.log(dbmd);
-        $('#queryModal').modal('toggle');
+        
       }
 
     },
