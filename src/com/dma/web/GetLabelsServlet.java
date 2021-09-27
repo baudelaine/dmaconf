@@ -151,11 +151,14 @@ public class GetLabelsServlet extends HttpServlet {
 						if(!clQuery.isEmpty() && StringUtils.countMatches(clQuery, "(?)") == 1 && StringUtils.countMatches(clQuery, " ? ") == 1){
 							String columnInClause = Tools.splitInClause(clQuery, fields, 1000);
 							clQuery = StringUtils.replace(clQuery, "(?)", columnInClause);
+							clQuery = StringUtils.replace(clQuery, " ? ", " '" + table + "' ");
 							
 							Map<String, String> cols = new HashMap<String, String>();
 							
+							System.out.println("clQuery=" + clQuery);
+							
 							stmt = con.prepareStatement(clQuery);
-							stmt.setString(1, table);
+//							stmt.setString(1, table);
 							rst = stmt.executeQuery();
 							
 							while(rst.next()){
@@ -180,6 +183,8 @@ public class GetLabelsServlet extends HttpServlet {
 							cdQuery = StringUtils.replace(cdQuery, "(?)", columnInClause);
 							
 							Map<String, String> cols = new HashMap<String, String>();
+
+							System.out.println("cdQuery=" + cdQuery);
 							
 							stmt = con.prepareStatement(cdQuery);
 							stmt.setString(1, table);
